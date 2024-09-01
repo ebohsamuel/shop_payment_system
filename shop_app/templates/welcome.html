@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+
+        .navbar {
+            background-color: #004080;
+            color: white;
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .navbar h1 {
+            margin: 0;
+            font-size: 24px;
+        }
+
+        .navbar ul {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            display: flex;
+        }
+
+        .navbar ul li {
+            position: relative;
+            margin-left: 20px;
+        }
+
+        .navbar ul li a {
+            color: white;
+            text-decoration: none;
+            padding: 10px 15px;
+            display: block;
+        }
+
+        .navbar ul li a:hover {
+            background-color: #0059b3;
+        }
+
+        .navbar ul li:hover .dropdown {
+            display: block;
+        }
+
+        .dropdown {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            background-color: #004080;
+            box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
+            z-index: 1;
+        }
+
+        .dropdown a {
+            padding: 10px 20px;
+            white-space: nowrap;
+        }
+
+        .dropdown a:hover {
+            background-color: #0059b3;
+        }
+
+        .content {
+            padding: 40px;
+            text-align: center;
+            background-color: white;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            margin: 20px auto;
+            max-width: 800px;
+            border-radius: 8px;
+        }
+
+        .content h2 {
+            color: #333;
+            font-size: 28px;
+            margin-bottom: 20px;
+        }
+
+        .content p {
+            font-size: 16px;
+            color: #666;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <h1>Company Logo</h1>
+        <ul>
+            <li>
+                <a>Users</a>
+                <div class="dropdown">
+                    <a href="/user/enter-new-user">Register New User</a>
+                    <a href="/user/user_list">Update User Info</a>
+                </div>
+            </li>
+            <li>
+                <a>Product Category</a>
+                <div class="dropdown">
+                    <a href="/enter/product-category">Register New Product Type</a>
+                    <a href="/product_category">Update Product Type Info</a>
+                </div>
+            </li>
+            <li>
+                <a>Purchase</a>
+                <div class="dropdown">
+                    <a href="/purchase/product-category">Register New Purchase</a>
+                    <a href="/purchase/purchase-data">Update Purchase Info</a>
+                    <a href="/product/price-list">Update Product Price</a>
+                </div>
+            </li>
+            <li>
+                <a>Sales</a>
+                <div class="dropdown">
+                    <a href="/sales/sales-platform">Enter New sales</a>
+                    <a href="#">Update Sales Data</a>
+                    <a href="#">Delete Sales</a>
+                </div>
+            </li>
+             <li>
+                <a href="#">Reports</a>
+                <div class="dropdown">
+                    <a href="#">Purchase</a>
+                    <a href="#">Sales</a>
+                    <a href="#">Stock</a>
+                </div>
+            </li>
+            <li>
+                <a href="/logout">Logout</a>
+                <div class="dropdown">
+
+                </div>
+            </li>
+        </ul>
+    </div>
+
+    <div class="content">
+        <h2>Welcome to XXX Company Ltd</h2>
+        <p>
+            Our company is dedicated to delivering high-quality cement and building iron rods, driving innovation in construction materials, and supporting the growth of our community. Explore our diverse range of products, learn about our efficient supply process, and discover the cutting-edge solutions we provide to meet the needs of the construction industry. Our mission is to build a stronger future by supplying the materials that shape the world.
+        </p>
+    </div>
+</body>
+</html>

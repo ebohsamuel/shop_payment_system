@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Data Update Form</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .form-container {
+            background-color: #fff;
+            padding: 20px 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 400px;
+        }
+        .form-header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .form-header h2 {
+            margin: 0;
+            font-size: 24px;
+            color: #333;
+        }
+        .form-group {
+            margin-bottom: 15px;
+            position: relative;
+        }
+        .form-group label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #333;
+        }
+        .form-group input[type="text"],
+        .form-group input[type="email"],
+        .form-group input[type="password"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        .form-group input[type="checkbox"] {
+            width: auto;
+            margin-right: 10px;
+        }
+        .form-group .checkbox-label {
+            display: inline-block;
+            margin-left: 5px;
+            font-weight: normal;
+            color: #333;
+        }
+        .form-group .checkbox-wrapper {
+            display: flex;
+            align-items: center;
+        }
+        .form-group .show-password {
+            position: absolute;
+            top: 30px;
+            right: 10px;
+            cursor: pointer;
+            font-size: 14px;
+            color: #007bff;
+        }
+        .form-group .error-message {
+            color: red;
+            font-size: 14px;
+            margin-top: 5px;
+            display: none;
+        }
+        .form-group button {
+            width: 100%;
+            padding: 10px;
+            border: none;
+            border-radius: 4px;
+            background-color: #007bff;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        .form-group button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+    <script>
+        function checkPasswordMatch() {
+            var password = document.getElementById("password").value;
+            var confirmPassword = document.getElementById("confirm_password").value;
+            var errorMessage = document.getElementById("error-message");
+
+            if (password !== "" && confirmPassword === "") {
+                errorMessage.textContent = "Please confirm your password.";
+                errorMessage.style.display = "block";
+                return false;
+            } else if (password !== confirmPassword) {
+                errorMessage.textContent = "Passwords do not match.";
+                errorMessage.style.display = "block";
+                return false;
+            } else {
+                errorMessage.style.display = "none";
+                return true;
+            }
+        }
+
+        function togglePasswordVisibility(id) {
+            var passwordField = document.getElementById(id);
+            var passwordType = passwordField.type;
+
+            if (passwordType === "password") {
+                passwordField.type = "text";
+            } else {
+                passwordField.type = "password";
+            }
+        }
+    </script>
+</head>
+<body>
+
+<div class="form-container">
+    <div class="form-header">
+        <h2>User Data Update</h2>
+    </div>
+    <form action="/user/user_list?user_id={{ user_id }}" method="post" onsubmit="return checkPasswordMatch();">
+        <div class="form-group">
+            <label for="email">Email</label>
+            <input type="email" id="email" name="email">
+        </div>
+        <div class="form-group">
+            <label for="password">Password</label>
+            <input type="password" id="password" name="password">
+            <span class="show-password" onclick="togglePasswordVisibility('password')">Show</span>
+        </div>
+        <div class="form-group">
+            <label for="confirm_password">Confirm Password</label>
+            <input type="password" id="confirm_password" name="confirm_password">
+            <span class="show-password" onclick="togglePasswordVisibility('confirm_password')">Show</span>
+        </div>
+        <div class="form-group">
+            <label for="fullname">Full Name</label>
+            <input type="text" id="fullname" name="fullname">
+        </div>
+        <div class="form-group">
+            <div class="checkbox-wrapper">
+                <input type="checkbox" id="is_active" name="is_active">
+                <label for="is_active" class="checkbox-label">Is Active</label>
+            </div>
+        </div>
+        <div class="form-group">
+            <button type="submit">Update</button>
+        </div>
+        <div class="form-group">
+            <button type="button" onclick="window.location.href='/user/user_list'">Back</button>
+        </div>
+        <div class="form-group">
+            <span id="error-message" class="error-message"></span>
+        </div>
+    </form>
+</div>
+
+</body>
+</html>

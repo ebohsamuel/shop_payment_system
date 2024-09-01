@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Update Purchase</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f8f9fa;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 25px;
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            color: #343a40;
+            font-size: 1.8rem;
+            margin-bottom: 25px;
+            text-align: center;
+        }
+
+        button {
+            background-color: #004080;
+            color: #ffffff;
+            border: none;
+            padding: 10px 20px;
+            font-size: 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+            display: inline-block;
+            margin-bottom: 20px;
+            text-decoration: none;
+            transition: background-color 0.3s ease;
+            float: right;
+        }
+
+        button:hover {
+            background-color: #87CEFA;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            padding: 14px;
+            text-align: left;
+            border-bottom: 1px solid #dee2e6;
+            font-size: 1rem;
+        }
+
+        th {
+            background-color: #e9ecef;
+            color: #495057;
+            font-weight: 600;
+        }
+
+        td a {
+            color: #007bff;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        td a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 15px;
+            }
+
+            th, td {
+                padding: 10px;
+                font-size: 0.9rem;
+            }
+
+            button {
+                width: 100%;
+                margin-bottom: 10px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Update Purchase Here</h1>
+        <button onclick="window.location.href='/welcome/'">Back</button>
+        <table id="purchaseTable">
+            <thead>
+                <tr>
+                    <th>Date of Purchase</th>
+                    <th>Name of Product</th>
+                    <th>Quantity</th>
+                    <th>Per Cost</th>
+                    <th>Total Cost</th>
+                    <th>Date of Entry</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Rows will be inserted here by JavaScript -->
+            </tbody>
+        </table>
+    </div>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const socket = new WebSocket("ws://localhost:8000/ws/purchases");
+
+        socket.onopen = function() {
+            console.log("WebSocket connection established.");
+        };
+
+        socket.onmessage = function(event) {
+            const data = JSON.parse(event.data);
+            updateTable(data);
+        };
+
+        socket.onclose = function() {
+            console.log("WebSocket connection closed.");
+        };
+
+        socket.onerror = function(error) {
+            console.error("WebSocket error:", error);
+        };
+
+        function updateTable(data) {
+            const tableBody = document.querySelector("#purchaseTable tbody");
+            tableBody.innerHTML = ""; // Clear existing rows
+
+            data.forEach(purchase => {
+                const row = document.createElement("tr");
+
+                row.innerHTML = `
+                    <td><a href="/purchase/${purchase.product_name}/${purchase.id}/update">${purchase.date_purchased}</a></td>
+                    <td>${purchase.product_name}</td>
+                    <td>${purchase.Quantity}</td>
+                    <td>${purchase.per_cost}</td>
+                    <td>${purchase.total_cost}</td>
+                    <td>${purchase.created_at}</td>
+                `;
+
+                tableBody.appendChild(row);
+            });
+        }
+    });
+</script>
+</body>
+
+</html>

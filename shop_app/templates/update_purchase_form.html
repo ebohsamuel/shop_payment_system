@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Purchase Update Form</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .form-container {
+            background-color: #fff;
+            padding: 20px 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 400px;
+        }
+        .form-header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .form-header h2 {
+            margin: 0;
+            font-size: 24px;
+            color: #333;
+        }
+        .form-group {
+            margin-bottom: 15px;
+            position: relative;
+        }
+        #error-message {
+            color: red;
+            font-size: 14px;
+            margin-top: 5px;
+            display: none; /* Initially hidden */
+        }
+        .form-group label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #333;
+        }
+        .form-group input[type="text"],
+        .form-group input[type="number"],
+        .form-group input[type="date"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        .form-group button {
+            width: 100%;
+            padding: 10px;
+            border: none;
+            border-radius: 4px;
+            background-color: #007bff;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        .form-group button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+
+<div class="form-container">
+    <div class="form-header">
+        <h2>{{ product_name }} Purchase Update Form</h2>
+    </div>
+    <form action="/purchase/purchase-data?product_name={{ product_name }}&purchase_id={{ purchase_id }}" onsubmit="return checkBeforeSubmit();" method="post">
+        <div class="form-group">
+            <label for="date_purchased">Date Purchased</label>
+            <input type="date" id="date_purchased" name="date_purchased">
+        </div>
+        <div class="form-group">
+            <label for="quantity">Quantity</label>
+            <input type="number" id="quantity" name="quantity">
+        </div>
+        <div class="form-group">
+            <label for="per_cost">Per Cost</label>
+            <input type="number" step="0.01" id="per_cost" name="per_cost">
+        </div>
+        <div class="form-group">
+            <label for="total_cost">Total Cost</label>
+            <input type="number" step="0.01" id="total_cost" name="total_cost">
+        </div>
+        <!-- Corrected the ID here -->
+        <div id="error-message" class="error-message"></div>
+        <div class="form-group">
+            <button type="submit">Submit</button>
+        </div>
+        <div class="form-group">
+            <button type="button" onclick="window.location.href='/purchase/purchase-data'">Back</button>
+        </div>
+    </form>
+</div>
+<script>
+    const totalCost = document.getElementById("total_cost");
+    const perCost = document.getElementById("per_cost");
+    const quantity = document.getElementById("quantity");
+
+    quantity.addEventListener('input',()=>{
+        totalCost.value = parseFloat(perCost.value) * parseFloat(quantity.value);
+    });
+
+    perCost.addEventListener('input',()=>{
+        totalCost.value = parseFloat(quantity.value) * parseFloat(perCost.value);
+    });
+
+    function checkBeforeSubmit() {
+        let per_cost = document.getElementById("per_cost").value;
+        let quantity = document.getElementById("quantity").value;
+        let errorMessage = document.getElementById("error-message");
+
+        // Check if either quantity or per_cost is empty (i.e., a falsy value)
+        if (!quantity && per_cost) {
+            errorMessage.innerText = "Please enter a quantity.";
+            errorMessage.style.display = "block";
+            return false;
+        } else if (quantity && !per_cost) {
+            errorMessage.innerText = "Please enter a cost per item.";
+            errorMessage.style.display = "block";
+            return false;
+        } else {
+            errorMessage.style.display = "none";
+            return true;
+        }
+    }
+</script>
+</body>
+</html>

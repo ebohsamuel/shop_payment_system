@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebSocket Example</title>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            // WebSocket connection is established when the DOM is fully loaded
+            const socket = new WebSocket("ws://localhost:8000/ws/purchases");
+
+            socket.onopen = function() {
+                console.log("WebSocket connection established.");
+            };
+
+            socket.onmessage = function(event) {
+                const data = JSON.parse(event.data);
+                document.getElementById("output").textContent = JSON.stringify(data, null, 2);
+            };
+
+            socket.onclose = function() {
+                console.log("WebSocket connection closed.");
+            };
+
+            socket.onerror = function(error) {
+                console.error("WebSocket error:", error);
+            };
+        });
+    </script>
+</head>
+<body>
+    <h1>WebSocket Data</h1>
+    <pre id="output">Waiting for data...</pre>
+</body>
+</html>
