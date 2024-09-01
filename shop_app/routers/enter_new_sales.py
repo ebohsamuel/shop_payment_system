@@ -1,6 +1,6 @@
 from datetime import date
 from fastapi.responses import HTMLResponse
-from shop_app.schemas import schemas_purchase, schemas_product
+from shop_app.schemas import schemas_purchase, schemas_product, schemas_sales
 from shop_app.crud import crud_purchase, crud_product_category, crud_product
 from fastapi import Request, Depends
 from shop_app.user_authentication import get_db
@@ -38,4 +38,23 @@ async def get_product_category(request: Request, db: Session = Depends(get_db)):
     return templates.TemplateResponse(
         "product_category_directory_for_sales.html", {"request": request, "products": rendered_products_category})
 
+
+@router.get("/sales/checkout", response_class=HTMLResponse)
+async def checkout_form(request: Request, db: Session = Depends(get_db)):
+    product_names = request.query_params.getlist("product")
+    selected_product = []
+    for product_name in product_names:
+        db_product = crud_product.get_product_by_product_name(db,product_name)
+        selected_product.append(
+            {
+                "product_name": product_name,
+                "price": db_product.price,
+                "stock": db_product.stock,
+                "id": db_product.id
+            }
+        )
+
+    return templates.TemplateResponse(
+        "checkout_form.html", {"request": request, "selected_product": selected_product}
+    )
 

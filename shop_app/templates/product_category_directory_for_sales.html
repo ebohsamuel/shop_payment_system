@@ -114,12 +114,12 @@
 
 <button class="back-button" onclick="window.location.href='/welcome/'">Back</button>
 
-<form action="/proceed-to-payment/" method="POST">
+<form action="/sales/checkout" method="GET">
     <div class="directory-container">
         {% for product in products %}
         <div class="product-card">
             <div class="checkbox-container">
-                <input type="checkbox" id="{{ product.product_name }}" name="selected_products" value="{{ product.product_id }}" onclick="toggleProceedButton()">
+                <input type="checkbox" id="{{ product.product_id }}" name="selected_products" value="{{ product.product_name }}" onclick="toggleProceedButton()">
             </div>
             <img src="data:image/jpeg;base64,{{ product.image_data }}" alt="{{ product.product_name }}" class="product-image">
             <div class="product-name"><p>{{ product.product_name }}</p></div>
@@ -133,7 +133,7 @@
         {% endfor %}
     </div>
 
-    <button type="submit" id="proceedButton" class="proceed-button">Proceed to Payment</button>
+    <button type="button" id="proceedButton" class="proceed-button" onclick="submitForm()">Checkout</button>
 </form>
 <script>
     function toggleProceedButton() {
@@ -158,7 +158,6 @@
 
         socket.addEventListener('message', function (event) {
             const data = JSON.parse(event.data);
-            console.log('Received data:', data);
             updateData(data);
         });
 
@@ -182,6 +181,32 @@
             });
         }
     });
+
+    function submitForm() {
+        // Get all checked checkboxes
+        const checkboxes = document.querySelectorAll('input[name="selected_products"]:checked');
+        const selectedProducts = [];
+
+        // Iterate over checked checkboxes and collect their values
+        checkboxes.forEach(checkbox => {
+            selectedProducts.push({
+                product_name: checkbox.value
+            });
+        });
+
+            // Build the query string for the URL
+        const queryParams = new URLSearchParams();
+
+        selectedProducts.forEach(product => {
+            queryParams.append('product', product.product_name);
+        });
+
+        // Create the redirect URL with the query string
+        const redirectUrl = `/sales/checkout?${queryParams}`;
+
+        // Redirect the user to the URL with the query parameters
+        window.location.href = redirectUrl;
+    }
 </script>
 
 </body>

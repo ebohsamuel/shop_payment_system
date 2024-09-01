@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+            margin: 0;
+            padding: 40px;
+        }
+        .container {
+            max-width: 1100px;
+            margin: auto;
+            padding: 20px;
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #343a40;
+            font-size: 28px;
+            margin-bottom: 20px;
+        }
+        .header-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .product-row {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            margin-bottom: 15px;
+        }
+        .product-field {
+            flex: 1;
+            min-width: 150px;
+            margin: 10px;
+        }
+        label {
+            font-size: 14px;
+            color: #495057;
+            margin-bottom: 5px;
+            display: block;
+        }
+        input {
+            width: 100%;
+            padding: 8px;
+            font-size: 14px;
+            color: #495057;
+            background-color: #e9ecef;
+            border: 1px solid #ced4da;
+            border-radius: 5px;
+            outline: none;
+            box-sizing: border-box;
+        }
+        input[readonly] {
+            background-color: #f8f9fa;
+        }
+        .submit-button, .back-button {
+            width: 48%;
+            padding: 12px 0;
+            font-size: 16px;
+            color: #ffffff;
+            background-color: #007bff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-align: center;
+            text-decoration: none;
+            transition: background-color 0.3s;
+        }
+        .submit-button:hover {
+            background-color: #0056b3;
+        }
+        .back-button {
+            background-color: #6c757d;
+        }
+        .back-button:hover {
+            background-color: #5a6268;
+        }
+        .button-group {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header-row">
+        <h1>Checkout Page</h1>
+        <div>
+            <label for="total_amount">Total Amount (₦):</label>
+            <input type="number" id="total_amount" step="0.01" readonly value="0">
+        </div>
+    </div>
+
+
+    <form action="/submit_selected_products" method="POST">
+        {% for product in selected_product %}
+        <div class="product-row">
+            <div class="product-field">
+                <label for="product_name_{{ product.id }}">Product Name</label>
+                <input type="text" id="product_name_{{ product.id }}" name="product_name" value="{{ product.product_name }}" readonly>
+            </div>
+            <div class="product-field">
+                <label for="price_{{ product.id }}">Price (₦)</label>
+                <input type="number" id="price_{{ product.id }}" name="price" value="{{ product.price }}" step="0.01" readonly>
+            </div>
+            <div class="product-field">
+                <label for="stock_{{ product.id }}">Stock Available</label>
+                <input type="text" id="stock_{{ product.id }}" name="stock" value="{{ product.stock }}" readonly>
+            </div>
+            <div class="product-field">
+                <label for="quantity_{{ product.id }}">Quantity</label>
+                <input type="number" id="quantity_{{ product.id }}" name="quantity" min="1" max="{{ product.stock }}" required>
+            </div>
+            <div class="product-field">
+                <label for="amount_{{ product.id }}">Amount</label>
+                <input type="number" id="amount_{{ product.id }}" name="amount" step="0.01" readonly required>
+            </div>
+        </div>
+        {% endfor %}
+
+        <div class="button-group">
+            <button type="submit" class="submit-button">Submit</button>
+            <button type="button" class="back-button" onclick="window.location.href='/sales/sales-platform'">Back</button>
+        </div>
+    </form>
+</div>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const quantities = document.querySelectorAll('input[name="quantity"]');
+        const amounts = document.querySelectorAll('input[name="amount"]');
+        const prices = document.querySelectorAll('input[name="price"]');
+        const totalAmount = document.getElementById('total_amount');
+
+        function calculateTotal() {
+            let total = 0;
+            amounts.forEach(amount => {
+                total += parseFloat(amount.value) || 0;  // Add or 0 to handle NaN values
+            });
+            totalAmount.value = total.toFixed(2); // Update input field
+        }
+
+        quantities.forEach((quantity, index) => {
+            quantity.addEventListener('input', () => {
+                const quantityValue = parseFloat(quantity.value) || 0; // Convert to number or use 0
+                const priceValue = parseFloat(prices[index].value) || 0; // Convert to number or use 0
+                amounts[index].value = (quantityValue * priceValue).toFixed(2); // Calculate amount
+                calculateTotal();  // Update total after every input change
+            });
+        });
+
+        calculateTotal(); // Initial calculation on page load
+    });
+
+</script>
+</body>
+</html>
