@@ -67,8 +67,12 @@ class WebSocketManager:
     async def broadcast(self, db: Session):
         purchases = get_all_purchase(db)
 
-        for connection in self.active_connections:
+        for connection in list(self.active_connections):
             try:
                 await connection.send_json(purchases)
-            except WebSocketDisconnect:
+            except (WebSocketDisconnect, RuntimeError) as e:
+                print(f"Error sending data: {e}")
+                self.remove_connection(connection)
+            except Exception as e:
+                print(f"Unexpected error while sending data: {e}")
                 self.remove_connection(connection)

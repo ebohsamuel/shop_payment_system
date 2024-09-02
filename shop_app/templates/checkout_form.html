@@ -103,7 +103,7 @@
     </div>
 
 
-    <form action="/submit_selected_products" method="POST">
+    <form>
         {% for product in selected_product %}
         <div class="product-row">
             <div class="product-field">
@@ -130,7 +130,7 @@
         {% endfor %}
 
         <div class="button-group">
-            <button type="submit" class="submit-button">Submit</button>
+            <button type="button" class="submit-button" onclick="submitForm()">Proceed to Payment</button>
             <button type="button" class="back-button" onclick="window.location.href='/sales/sales-platform'">Back</button>
         </div>
     </form>
@@ -161,6 +161,42 @@
 
         calculateTotal(); // Initial calculation on page load
     });
+
+    function submitForm() {
+        const quantities = document.querySelectorAll('input[name="quantity"]');
+        const productNames = document.querySelectorAll('input[name="product_name"]');
+        const totalAmount = document.getElementById('total_amount');
+        const queryParam = new URLSearchParams();
+        queryParam.append('net', parseFloat(totalAmount.value));
+
+
+        const minLength = Math.min(quantities.length, productNames.length);
+        const processedItems = [];
+        for(i=0;i<minLength;i++) {
+            processedItems.push({
+                product_name: productNames[i].value,
+                quantity: parseFloat(quantities[i].value)
+            });
+        }
+
+        const requestBody = { processedItems: processedItems };
+
+        fetch('/sales/set-cookies', {
+           method: 'POST',
+           headers: {
+            'Content-Type': 'application/json'
+           },
+           body: JSON.stringify(requestBody)
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log('Success:', data); // Handle the response data
+            window.location.href = '/sales/register-sales?'+ queryParam.toString();
+        })
+        .catch(error => {
+              console.error('Error:', error); // Handle any errors
+        });
+    };
 
 </script>
 </body>

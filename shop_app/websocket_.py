@@ -23,6 +23,7 @@ async def websocket_endpoint(websocket: WebSocket, db: Session = Depends(get_db)
         ws_purchase_manager.remove_connection(websocket)
         print("WebSocket disconnected")
     except Exception as e:
+        ws_purchase_manager.remove_connection(websocket)
         print(f"Error: {e}")
     finally:
         if websocket in ws_purchase_manager.active_connections:
@@ -43,6 +44,7 @@ async def websocket_endpoint(websocket: WebSocket, db: Session = Depends(get_db)
         ws_sales_manager.remove_connection(websocket)
         print("WebSocket disconnected")
     except Exception as e:
+        ws_sales_manager.remove_connection(websocket)
         print(f"Error: {e}")
     finally:
         if websocket in ws_sales_manager.active_connections:

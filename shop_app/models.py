@@ -80,9 +80,8 @@ class Order(Base):
     user_id = Column(Integer, ForeignKey("users.id"))
     total_amount = Column(Float, nullable=False)
     customer_name = Column(String)
-    customer_email = Column(String, unique=True)
+    customer_email = Column(String)
     payment_method = Column(String, nullable=True)
-    payment_status = Column(String, default="pending")
     created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
 
     user = relationship("User", back_populates="orders")
