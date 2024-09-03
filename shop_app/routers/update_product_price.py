@@ -1,11 +1,11 @@
-from datetime import date
 from fastapi.responses import HTMLResponse
-from shop_app.crud import crud_purchase, crud_product
+from shop_app.crud import crud_product
 from fastapi import Request, Depends
 from shop_app.user_authentication import get_db
 from shop_app.user_authentication import templates, check_admin
 from fastapi import APIRouter, Form
 from sqlalchemy.orm import Session
+from dateutil.parser import parse
 
 
 router = APIRouter(dependencies=[Depends(check_admin)])
@@ -14,7 +14,17 @@ router = APIRouter(dependencies=[Depends(check_admin)])
 @router.get("/product/price-list", response_class=HTMLResponse,)
 async def price_list(request: Request, db: Session = Depends(get_db)):
     products = crud_product.get_all_product(db)
-    return templates.TemplateResponse("price-list.html",{"request": request, "products": products})
+    products_ = [{
+        "id": product.get('id'),
+        "product_name": product.get('product_name'),
+        "price": product.get('price'),
+        "stock": product.get('stock'),
+        "product_category_id": product.get('product_category_id'),
+        "created_at": parse(product.get('created_at')).replace(microsecond=0),
+        "updated_at": parse(product.get('updated_at')).replace(microsecond=0)
+        } for product in products]
+
+    return templates.TemplateResponse("price-list.html",{"request": request, "products": products_})
 
 
 @router.get("/product/price/{product_name}", response_class=HTMLResponse)

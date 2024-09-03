@@ -1,20 +1,40 @@
 from sqlalchemy.orm import Session
-from shop_app.schemas import schemas_purchase
+from shop_app.schemas import schemas_sales
 from shop_app import models
 from sqlalchemy import desc
 from fastapi import WebSocket, WebSocketDisconnect
 
 
-def add_new_purchase(db: Session, purchase: schemas_purchase.PurchaseCreate):
-    db_purchase = models.ProductPurchaseTracking(**purchase.model_dump())
-    db.add(db_purchase)
-    return db_purchase
+def create_new_order(db: Session, order_details: schemas_sales.OrderCreate):
+    db_order = models.Order(**order_details.model_dump())
+    db.add(db_order)
+    db.commit()
+    db.refresh(db_order)
+    return db_order
 
 
-def get_purchase_by_id(db: Session, purchase_id: int):
-    return db.query(models.ProductPurchaseTracking).filter(models.ProductPurchaseTracking.id == purchase_id).first()
+def get_order_by_id(db: Session, order_id: int):
+    return db.query(models.Order).filter(models.Order.id == order_id).first()
 
 
+def get_all_oder(db: Session):
+    return db.query(models.Order).order_by(desc(models.Order.created_at)).all()
+
+
+def create_new_order_item(db: Session, order_item_details: schemas_sales.OrderItemCreate):
+    db_order_item = models.OrderItem(**order_item_details.model_dump())
+    db.add(db_order_item)
+    return db_order_item
+
+
+def get_order_item_by_id(db: Session, order_item_id: int):
+    return db.query(models.OrderItem).filter(models.OrderItem.id == order_item_id).first()
+
+
+def get_all_oder_item(db: Session):
+    return db.query(models.OrderItem).order_by(desc(models.OrderItem.created_at)).all()
+
+"""
 def update_purchase(db: Session, purchase_details: dict, purchase_id: int):
     db_purchase = get_purchase_by_id(db, purchase_id)
     if purchase_details["date_purchased"]:
@@ -67,3 +87,4 @@ class WebSocketManager:
             except Exception as e:
                 print(f"Unexpected error while sending data: {e}")
                 self.remove_connection(connection)
+"""

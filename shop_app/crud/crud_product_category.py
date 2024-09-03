@@ -4,10 +4,7 @@ from shop_app import models
 
 
 def add_new_product_category(db: Session, product_category: schema_product_category.ProductCategoryCreate):
-    db_product_category = models.ProductCategory(
-        product_name=product_category.product_name,
-        image_data=product_category.image_data
-    )
+    db_product_category = models.ProductCategory(**product_category.model_dump())
     db.add(db_product_category)
     db.commit()
     db.refresh(db_product_category)

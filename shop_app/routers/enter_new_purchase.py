@@ -71,8 +71,6 @@ async def enter_new_product_category(
     db_product = crud_product.get_product_by_product_name(db, product_name)
     if db_product:
         db_product.stock += quantity
-        db.commit()
-        db.refresh(db_product)
     else:
         product = schemas_product.ProductCreate(
             product_name=product_name,
@@ -80,7 +78,9 @@ async def enter_new_product_category(
             stock=quantity
         )
         db_product = crud_product.add_new_product(db, product)
-
+    db.commit()
+    db.refresh(db_purchase)
+    db.refresh(db_product)
     return templates.TemplateResponse(
         "new-purchase-form.html",
         {

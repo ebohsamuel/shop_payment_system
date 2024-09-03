@@ -15,11 +15,11 @@ class User(Base):
     fullname = Column(String)
     is_active = Column(Boolean, default=False)
     is_admin = Column(Boolean)
-    created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
+    created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc).replace(microsecond=0))
     updated_at = Column(
         DateTime(timezone=True),
-        default=lambda: datetime.now(timezone.utc),
-        onupdate=lambda: datetime.now(timezone.utc)
+        default=lambda: datetime.now(timezone.utc).replace(microsecond=0),
+        onupdate=lambda: datetime.now(timezone.utc).replace(microsecond=0)
     )
 
     orders = relationship("Order", back_populates="user")
@@ -31,7 +31,7 @@ class ProductCategory(Base):
     id = Column(Integer, primary_key=True)
     product_name = Column(String, unique=True, index=True)
     image_data = Column(LargeBinary)
-    created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
+    created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc).replace(microsecond=0))
 
     purchases = relationship("ProductPurchaseTracking", back_populates="product_category")
     orderitem = relationship("OrderItem", back_populates="product_category")
@@ -45,7 +45,7 @@ class ProductPurchaseTracking(Base):
     date_purchased = Column(Date, nullable=False, index=True)
     product_name = Column(String, nullable=False)
     product_category_id = Column(Integer, ForeignKey("productcategory.id"))
-    created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
+    created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc).replace(microsecond=0))
     Quantity = Column(Integer, nullable=False)
     per_cost = Column(Float, nullable=False)
     total_cost = Column(Float, nullable=False)
@@ -61,11 +61,11 @@ class Product(Base):
     price = Column(Float)
     stock = Column(Integer)
     product_category_id = Column(Integer, ForeignKey("productcategory.id"))
-    created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
+    created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc).replace(microsecond=0))
     updated_at = Column(
         DateTime(timezone=True),
-        default=lambda: datetime.now(timezone.utc),
-        onupdate=lambda: datetime.now(timezone.utc)
+        default=lambda: datetime.now(timezone.utc).replace(microsecond=0),
+        onupdate=lambda: datetime.now(timezone.utc).replace(microsecond=0)
     )
 
     product_category = relationship("ProductCategory", back_populates="product")
@@ -82,7 +82,7 @@ class Order(Base):
     customer_name = Column(String)
     customer_email = Column(String)
     payment_method = Column(String, nullable=True)
-    created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
+    created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc).replace(microsecond=0))
 
     user = relationship("User", back_populates="orders")
     orderitems = relationship("OrderItem", back_populates="order")
@@ -96,7 +96,7 @@ class OrderItem(Base):
     product_id = Column(Integer, ForeignKey("product.id"))
     product_category_id = Column(Integer, ForeignKey("productcategory.id"))
     quantity = Column(Integer, nullable=False)
-    created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
+    created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc).replace(microsecond=0))
 
     product = relationship("Product", back_populates="orderitems")
     order = relationship("Order", back_populates="orderitems")

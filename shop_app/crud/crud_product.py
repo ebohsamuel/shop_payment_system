@@ -7,8 +7,6 @@ from fastapi import WebSocket, WebSocketDisconnect
 def add_new_product(db: Session, product: schemas_product.ProductCreate):
     db_product = models.Product(**product.model_dump(exclude_none=True))
     db.add(db_product)
-    db.commit()
-    db.refresh(db_product)
     return db_product
 
 

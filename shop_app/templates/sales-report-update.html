@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sales Report Update</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f8f9fa;
+            color: #343a40;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 25px;
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            font-size: 2rem;
+            margin-bottom: 25px;
+            text-align: center;
+        }
+
+        button {
+            background-color: #004080;
+            color: #ffffff;
+            border: none;
+            padding: 12px 25px;
+            font-size: 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+            display: inline-block;
+            text-decoration: none;
+            transition: background-color 0.3s ease;
+            float: right;
+        }
+
+        button:hover {
+            background-color: #87CEFA;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            overflow-x: auto;
+            display: block;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #dee2e6;
+            font-size: 1rem;
+            white-space: nowrap;
+        }
+
+        th {
+            background-color: #e9ecef;
+            color: #495057;
+            font-weight: 600;
+        }
+
+        td a {
+            color: #007bff;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        td a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+
+            h1 {
+                font-size: 1.5rem;
+            }
+
+            th, td {
+                padding: 10px;
+                font-size: 0.9rem;
+            }
+
+            button {
+                width: 100%;
+                margin-bottom: 15px;
+                padding: 10px;
+                text-align: center;
+            }
+
+            th, td {
+                white-space: normal;
+            }
+        }
+
+        @media (max-width: 480px) {
+            th, td {
+                display: block;
+                text-align: right;
+                font-size: 0.85rem;
+            }
+
+            th {
+                text-align: left;
+                background-color: transparent;
+                padding-left: 0;
+            }
+
+            td {
+                border-bottom: 1px solid #dee2e6;
+                position: relative;
+                padding-left: 50%;
+                text-align: left;
+            }
+
+            td:before {
+                content: attr(data-label);
+                position: absolute;
+                left: 0;
+                width: 45%;
+                padding-left: 15px;
+                font-weight: bold;
+                text-align: left;
+                background-color: #e9ecef;
+                color: #495057;
+                border-right: 1px solid #dee2e6;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Sales Report Update</h1>
+        <button onclick="window.location.href='/welcome/'">Back</button>
+        <table>
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Customer Name</th>
+                    <th>Customer Email</th>
+                    <th>Attendant</th>
+                    <th>Payment Method</th>
+                    <th>Product Name</th>
+                    <th>Sales Quantity</th>
+                    <th>Sales Price</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for order_item in order_items %}
+                <tr>
+                    <td data-label="Date"><a href="/sales/update/{{ order_item.product.product_name }}/{{ order_item.id }}">{{ order_item.created_at }}</a></td>
+                    <td data-label="Customer Name">{{ order_item.order.customer_name }}</td>
+                    <td data-label="Customer Email">{{ order_item.order.customer_email }}</td>
+                    <td data-label="Attendant">{{ order_item.order.user.fullname }}</td>
+                    <td data-label="Payment Method">{{ order_item.order.payment_method }}</td>
+                    <td data-label="Product Name">{{ order_item.product.product_name }}</td>
+                    <td data-label="Sales Quantity">{{ order_item.quantity }}</td>
+                    <td data-label="Sales Price">{{ order_item.product.price }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</body>
+
+</html>

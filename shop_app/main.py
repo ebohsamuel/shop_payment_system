@@ -5,7 +5,7 @@ from fastapi import Request
 from shop_app.routers import user_registration, user_activation, welcome, login, logout, user_data_update
 from shop_app.routers import register_new_product_category, product_category_data_update
 from shop_app.routers import enter_new_purchase, purchase_data_update, update_product_price
-from shop_app.routers import enter_new_sales
+from shop_app.routers import enter_new_sales, sales_data_update
 from fastapi.responses import RedirectResponse
 from shop_app import websocket_
 
@@ -26,6 +26,7 @@ app.include_router(enter_new_purchase.router)
 app.include_router(purchase_data_update.router)
 app.include_router(update_product_price.router)
 app.include_router(enter_new_sales.router)
+app.include_router(sales_data_update.router)
 app.include_router(websocket_.router)
 
 
