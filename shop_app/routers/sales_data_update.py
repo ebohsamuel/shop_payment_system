@@ -1,4 +1,3 @@
-from datetime import date
 from fastapi.responses import HTMLResponse
 from shop_app.crud import crud_product, crud_sales
 from fastapi import Request, Depends
@@ -6,6 +5,7 @@ from shop_app.user_authentication import get_db
 from shop_app.user_authentication import templates, check_admin
 from fastapi import APIRouter, Form
 from sqlalchemy.orm import Session
+
 
 router = APIRouter(dependencies=[Depends(check_admin)])
 
@@ -45,7 +45,10 @@ async def sales_report(
 ):
     if quantity:
         db_product = crud_product.get_product_by_product_name(db,product_name)
-        db_order_item = crud_sales.get_order_item_by_id(db,order_item_id)
+        db_order_item = crud_sales.get_order_item_by_id(db, order_item_id)
+        db_order = crud_sales.get_order_by_id(db, db_order_item.order.id)
+
+        db_order.total_amount = db_order.total_amount + (quantity - db_order_item.quantity) * db_product.price
 
         db_product.stock = db_product.stock + db_order_item.quantity - quantity
 
@@ -54,7 +57,7 @@ async def sales_report(
         db.commit()
         db.refresh(db_order_item)
         db.refresh(db_product)
-
+        db.refresh(db_order)
     db_order_items = crud_sales.get_all_oder_item(db)
     for order_item in db_order_items:
         order_item.created_at = order_item.created_at.replace(microsecond=0)
