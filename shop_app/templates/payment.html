@@ -104,13 +104,25 @@
             <button type="submit">Cash or Bank</button>
         </div>
         <div class="form-group">
-            <button type="button" class="paystack-button">Paystack</button>
+            <button type="button" class="paystack-button" onclick="paystackSubmit()">Paystack</button>
         </div>
         <div class="form-group">
             <button type="button" class="back-button" onclick="window.location.href='/sales/sales-platform'">Back</button>
         </div>
     </form>
 </div>
+<script>
+    function paystackSubmit(){
+       const customer_email = document.getElementById('customer_email');
+       const total_amount = document.getElementById('total_amount');
 
+       const queryParams = new URLSearchParams();
+
+       queryParams.append('email', customer_email.value);
+       queryParams.append('amount', parseFloat(total_amount.value));
+
+       window.location.href = '/sales/payment/paystack?' + queryParams.toString();
+    };
+</script>
 </body>
 </html>

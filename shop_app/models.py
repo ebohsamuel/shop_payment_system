@@ -96,6 +96,7 @@ class OrderItem(Base):
     product_id = Column(Integer, ForeignKey("product.id"))
     product_category_id = Column(Integer, ForeignKey("productcategory.id"))
     quantity = Column(Integer, nullable=False)
+    sales_price = Column(Float)
     created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc).replace(microsecond=0))
 
     product = relationship("Product", back_populates="orderitems")

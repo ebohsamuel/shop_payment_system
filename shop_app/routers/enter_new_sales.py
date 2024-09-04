@@ -43,7 +43,7 @@ async def checkout_form(request: Request, db: Session = Depends(get_db)):
 @router.post("/sales/set-cookies")
 async def set_sales_cookies(items: schemas_sales.OrderDatas, response: Response):
     serialized_items = json.dumps(items.model_dump())
-    response.set_cookie("sales_items", value=serialized_items, max_age=900, httponly=True, samesite="strict")
+    response.set_cookie("sales_items", value=serialized_items, max_age=900, httponly=True, samesite="none")
     print("successful")
     return {"message": "successful"}
 
@@ -88,7 +88,8 @@ async def cash_back_transfer(
             order_id=db_order.id,
             product_id=db_product.id,
             product_category_id=db_product.product_category_id,
-            quantity=item.get("quantity")
+            quantity=item.get("quantity"),
+            sales_price=item.get("price")
         )
         # create the order item
         db_order_item = crud_sales.create_new_order_item(db, order_item_details)

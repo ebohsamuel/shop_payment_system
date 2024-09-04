@@ -39,16 +39,15 @@ async def update_sales_quantity_form(
 async def sales_report(
         request: Request,
         order_item_id: int,
-        product_name: str,
         quantity: int | None = Form(default=None),
         db: Session = Depends(get_db)
 ):
     if quantity:
-        db_product = crud_product.get_product_by_product_name(db,product_name)
         db_order_item = crud_sales.get_order_item_by_id(db, order_item_id)
-        db_order = crud_sales.get_order_by_id(db, db_order_item.order.id)
+        db_product = db_order_item.product
+        db_order = db_order_item.order
 
-        db_order.total_amount = db_order.total_amount + (quantity - db_order_item.quantity) * db_product.price
+        db_order.total_amount = db_order.total_amount + (quantity - db_order_item.quantity) * db_order_item.sales_price
 
         db_product.stock = db_product.stock + db_order_item.quantity - quantity
 

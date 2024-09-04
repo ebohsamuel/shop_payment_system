@@ -75,7 +75,7 @@
     <div class="form-header">
         <h2>{{ product_name }} Sales Quantity Update Form</h2>
     </div>
-    <form action="/sales/report/update?product_name={{ product_name }}&order_item_id={{ order_item_id }}" method="post">
+    <form action="/sales/report/update?order_item_id={{ order_item_id }}" method="post">
         <div class="form-group">
             <label for="quantity">Quantity</label>
             <input type="number" id="quantity" name="quantity">

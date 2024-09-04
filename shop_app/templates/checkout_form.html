@@ -166,16 +166,19 @@
         const quantities = document.querySelectorAll('input[name="quantity"]');
         const productNames = document.querySelectorAll('input[name="product_name"]');
         const totalAmount = document.getElementById('total_amount');
+        const prices = document.querySelectorAll('input[name="price"]');
+
         const queryParam = new URLSearchParams();
         queryParam.append('net', parseFloat(totalAmount.value));
 
 
-        const minLength = Math.min(quantities.length, productNames.length);
+        const minLength = Math.min(quantities.length, productNames.length, prices.length);
         const processedItems = [];
-        for(i=0;i<minLength;i++) {
+        for(let i=0;i<minLength;i++) {
             processedItems.push({
                 product_name: productNames[i].value,
-                quantity: parseFloat(quantities[i].value)
+                quantity: parseFloat(quantities[i].value),
+                price: parseFloat(prices[i].value)
             });
         }
 
