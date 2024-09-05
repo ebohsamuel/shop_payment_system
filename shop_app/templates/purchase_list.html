@@ -29,6 +29,12 @@
             text-align: center;
         }
 
+        .button-container {
+            display: flex;
+            justify-content: flex-start; /* Align the button to the left */
+            margin-bottom: 20px;
+        }
+
         button {
             background-color: #004080;
             color: #ffffff;
@@ -37,21 +43,24 @@
             font-size: 1rem;
             border-radius: 4px;
             cursor: pointer;
-            display: inline-block;
-            margin-bottom: 20px;
             text-decoration: none;
             transition: background-color 0.3s ease;
-            float: right;
         }
 
         button:hover {
             background-color: #87CEFA;
         }
 
+        /* Scrollable container for the table */
+        .table-container {
+            overflow-x: auto;
+            margin-top: 20px;
+        }
+
         table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 20px;
+            min-width: 800px; /* Ensures horizontal scroll if content exceeds viewport */
         }
 
         th, td {
@@ -77,6 +86,7 @@
             text-decoration: underline;
         }
 
+        /* Responsive improvements */
         @media (max-width: 600px) {
             .container {
                 padding: 15px;
@@ -89,7 +99,11 @@
 
             button {
                 width: 100%;
-                margin-bottom: 10px;
+                text-align: center;
+            }
+
+            table {
+                min-width: 600px;
             }
         }
     </style>
@@ -98,65 +112,74 @@
 <body>
     <div class="container">
         <h1>Update Purchase Here</h1>
-        <button onclick="window.location.href='/welcome/'">Back</button>
-        <table id="purchaseTable">
-            <thead>
-                <tr>
-                    <th>Date of Purchase</th>
-                    <th>Name of Product</th>
-                    <th>Quantity</th>
-                    <th>Per Cost</th>
-                    <th>Total Cost</th>
-                    <th>Date of Entry</th>
-                </tr>
-            </thead>
-            <tbody>
-                <!-- Rows will be inserted here by JavaScript -->
-            </tbody>
-        </table>
+
+        <!-- Back button inside a container -->
+        <div class="button-container">
+            <button onclick="window.location.href='/welcome/'">Back</button>
+        </div>
+
+        <!-- Scrollable table container -->
+        <div class="table-container">
+            <table id="purchaseTable">
+                <thead>
+                    <tr>
+                        <th>Date of Purchase</th>
+                        <th>Name of Product</th>
+                        <th>Quantity</th>
+                        <th>Per Cost</th>
+                        <th>Total Cost</th>
+                        <th>Date of Entry</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Rows will be inserted here by JavaScript -->
+                </tbody>
+            </table>
+        </div>
     </div>
-<script>
-    document.addEventListener("DOMContentLoaded", function() {
-        const socket = new WebSocket("ws://localhost:8000/ws/purchases");
 
-        socket.onopen = function() {
-            console.log("WebSocket connection established.");
-        };
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const socket = new WebSocket("ws://localhost:8000/ws/purchases");
 
-        socket.onmessage = function(event) {
-            const data = JSON.parse(event.data);
-            updateTable(data);
-        };
+            socket.onopen = function () {
+                console.log("WebSocket connection established.");
+            };
 
-        socket.onclose = function() {
-            console.log("WebSocket connection closed.");
-        };
+            socket.onmessage = function (event) {
+                const data = JSON.parse(event.data);
+                updateTable(data);
+            };
 
-        socket.onerror = function(error) {
-            console.error("WebSocket error:", error);
-        };
+            socket.onclose = function () {
+                console.log("WebSocket connection closed.");
+            };
 
-        function updateTable(data) {
-            const tableBody = document.querySelector("#purchaseTable tbody");
-            tableBody.innerHTML = ""; // Clear existing rows
+            socket.onerror = function (error) {
+                console.error("WebSocket error:", error);
+            };
 
-            data.forEach(purchase => {
-                const row = document.createElement("tr");
+            function updateTable(data) {
+                const tableBody = document.querySelector("#purchaseTable tbody");
+                tableBody.innerHTML = ""; // Clear existing rows
 
-                row.innerHTML = `
-                    <td><a href="/purchase/${purchase.product_name}/${purchase.id}/update">${purchase.date_purchased}</a></td>
-                    <td>${purchase.product_name}</td>
-                    <td>${purchase.Quantity}</td>
-                    <td>${purchase.per_cost}</td>
-                    <td>${purchase.total_cost}</td>
-                    <td>${purchase.created_at}</td>
-                `;
+                data.forEach(purchase => {
+                    const row = document.createElement("tr");
 
-                tableBody.appendChild(row);
-            });
-        }
-    });
-</script>
+                    row.innerHTML = `
+                        <td><a href="/purchase/${purchase.product_name}/${purchase.id}/update">${purchase.date_purchased}</a></td>
+                        <td>${purchase.product_name}</td>
+                        <td>${purchase.Quantity}</td>
+                        <td>${purchase.per_cost}</td>
+                        <td>${purchase.total_cost}</td>
+                        <td>${purchase.created_at}</td>
+                    `;
+
+                    tableBody.appendChild(row);
+                });
+            }
+        });
+    </script>
 </body>
 
 </html>

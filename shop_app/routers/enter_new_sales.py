@@ -43,7 +43,7 @@ async def checkout_form(request: Request, db: Session = Depends(get_db)):
 @router.post("/sales/set-cookies")
 async def set_sales_cookies(items: schemas_sales.OrderDatas, response: Response):
     serialized_items = json.dumps(items.model_dump())
-    response.set_cookie("sales_items", value=serialized_items, max_age=900, httponly=True, samesite="none")
+    response.set_cookie("sales_items", value=serialized_items, max_age=900, httponly=True, samesite="strict")
     print("successful")
     return {"message": "successful"}
 

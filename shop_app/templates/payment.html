@@ -116,6 +116,12 @@
        const customer_email = document.getElementById('customer_email');
        const total_amount = document.getElementById('total_amount');
 
+       if (!customer_email.value || !total_amount.value) {
+            alert("Please ensure the total amount and email are filled.");
+            return;
+        }
+
+
        const queryParams = new URLSearchParams();
 
        queryParams.append('email', customer_email.value);

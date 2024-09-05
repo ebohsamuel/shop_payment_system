@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Update Purchase</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f2f5;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 50px auto;
+            padding: 30px;
+            background-color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            color: #343a40;
+            font-size: 2rem;
+            margin-bottom: 30px;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .button-container {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            align-items: center;
+        }
+
+        button {
+            background-color: #004080;
+            color: #ffffff;
+            border: none;
+            padding: 10px 20px;
+            font-size: 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #87CEFA;
+        }
+
+        .date-filter {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        input[type="date"] {
+            padding: 8px;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+
+        .table-container {
+            overflow-x: auto;
+            margin-top: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 900px;
+        }
+
+        th, td {
+            padding: 14px;
+            text-align: left;
+            border-bottom: 1px solid #dee2e6;
+            font-size: 1rem;
+        }
+
+        th {
+            background-color: #e9ecef;
+            color: #495057;
+            font-weight: 600;
+        }
+
+        td a {
+            color: #007bff;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        td a:hover {
+            text-decoration: underline;
+        }
+
+        .export-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px;
+            }
+
+            th, td {
+                padding: 10px;
+                font-size: 0.9rem;
+            }
+
+            button {
+                width: 100%;
+                text-align: center;
+            }
+
+            table {
+                min-width: 600px;
+            }
+
+            .date-filter {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Update Purchase</h1>
+
+        <!-- Button container with back, PDF, and Excel export -->
+        <div class="button-container">
+            <button onclick="window.location.href='/welcome/'">Back</button>
+            <div class="export-buttons">
+                <button onclick="exportToPDF()">Export to PDF</button>
+                <button onclick="exportToExcel()">Export to Excel</button>
+            </div>
+        </div>
+
+        <!-- Date Filter Inputs -->
+        <div class="date-filter">
+            <label for="startDate">Start Date:</label>
+            <input type="date" id="startDate">
+            <label for="endDate">End Date:</label>
+            <input type="date" id="endDate">
+            <button onclick="filterByDate()">Filter</button>
+        </div>
+
+        <!-- Scrollable table container -->
+        <div class="table-container">
+            <table id="purchaseTable">
+                <thead>
+                    <tr>
+                        <th>Date of Purchase</th>
+                        <th>Name of Product</th>
+                        <th>Quantity</th>
+                        <th>Per Cost</th>
+                        <th>Total Cost</th>
+                        <th>Date of Entry</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Rows will be inserted here by JavaScript -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <!-- Include jsPDF for PDF export -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+    <!-- Include SheetJS for Excel export -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.16.9/xlsx.full.min.js"></script>
+    <script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const socket = new WebSocket("ws://localhost:8000/ws/purchases");
+        let purchasesData = [];  // Store the full data set received via WebSocket
+
+        socket.onopen = function () {
+            console.log("WebSocket connection established.");
+        };
+
+        socket.onmessage = function (event) {
+            const data = JSON.parse(event.data);
+            purchasesData = data;  // Store the data globally
+            updateTable(data);
+        };
+
+        socket.onclose = function () {
+            console.log("WebSocket connection closed.");
+        };
+
+        socket.onerror = function (error) {
+            console.error("WebSocket error:", error);
+        };
+
+        function updateTable(data) {
+            const tableBody = document.querySelector("#purchaseTable tbody");
+            tableBody.innerHTML = "";  // Clear existing rows
+
+            data.forEach(purchase => {
+                const row = document.createElement("tr");
+
+                row.innerHTML = `
+                    <td><a href="/purchase/${purchase.product_name}/${purchase.id}/update">${purchase.date_purchased}</a></td>
+                    <td>${purchase.product_name}</td>
+                    <td>${purchase.Quantity}</td>
+                    <td>${purchase.per_cost}</td>
+                    <td>${purchase.total_cost}</td>
+                    <td>${purchase.created_at}</td>
+                `;
+
+                tableBody.appendChild(row);
+            });
+        }
+
+        // Filter function for date range
+        function filterByDate() {
+            const startDate = document.getElementById("startDate").value;
+            const endDate = document.getElementById("endDate").value;
+
+            if (!startDate || !endDate) {
+                alert("Please select both start and end dates");
+                return;
+            }
+
+            const filteredData = purchasesData.filter(purchase => {
+                const purchaseDate = new Date(purchase.date_purchased);
+                return purchaseDate >= new Date(startDate) && purchaseDate <= new Date(endDate);
+            });
+
+            updateTable(filteredData);
+        }
+
+
+        // Attach event handlers to buttons
+        document.querySelector("button[onclick='filterByDate()']").addEventListener("click", filterByDate);
+    });
+</script>
+
+</body>
+
+</html>

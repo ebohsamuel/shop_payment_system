@@ -9,15 +9,42 @@
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: #f8f9fa;
             margin: 0;
-            padding: 40px;
+            padding: 20px;
         }
+
+        h1 {
+            text-align: center;
+            color: #495057;
+            font-size: 2rem;
+            margin-bottom: 20px;
+        }
+
+        .back-button {
+            display: inline-block;
+            padding: 10px 20px;
+            font-size: 16px;
+            color: #ffffff;
+            background-color: #007bff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-align: center;
+            text-decoration: none;
+            margin-bottom: 20px;
+        }
+
+        .back-button:hover {
+            background-color: #0056b3;
+        }
+
         .directory-container {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
             gap: 20px;
             max-width: 1200px;
             margin: auto;
         }
+
         .product-card {
             background-color: #ffffff;
             border-radius: 8px;
@@ -28,61 +55,53 @@
             text-align: center;
             position: relative;
         }
+
         .product-card:hover {
             transform: translateY(-5px);
             box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
         }
+
         .product-image {
             width: 100%;
             height: 150px;
             object-fit: cover;
             border-radius: 8px;
         }
+
         .product-name {
-            font-size: 18px;
+            font-size: 1.1rem;
             color: #343a40;
             margin: 10px 0;
             font-weight: 600;
-            text-decoration: none;
         }
+
         .product-name a {
             color: inherit;
             text-decoration: none;
             transition: color 0.2s;
         }
+
         .product-name a:hover {
             color: #007bff;
         }
+
         .product-details {
             margin: 10px 0;
-            font-size: 14px;
+            font-size: 0.9rem;
             color: #495057;
         }
-        .back-button {
-            display: block;
-            margin: 0 auto 20px;
-            padding: 10px 20px;
-            font-size: 16px;
-            color: #ffffff;
-            background-color: #007bff;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            text-align: center;
-            text-decoration: none;
-        }
-        .back-button:hover {
-            background-color: #0056b3;
-        }
+
         .checkbox-container {
             position: absolute;
             top: 10px;
             right: 10px;
         }
+
         .checkbox-container input[type="checkbox"] {
             width: 20px;
             height: 20px;
         }
+
         .proceed-button {
             display: block;
             margin: 20px auto;
@@ -99,42 +118,64 @@
             pointer-events: none;
             opacity: 0.6;
         }
+
         .proceed-button:hover {
             background-color: #218838;
         }
+
         .proceed-button.enabled {
             pointer-events: auto;
             opacity: 1;
+        }
+
+        /* Scrollable container for wide screens */
+        .scroll-container {
+            overflow-x: auto;
+            padding-bottom: 15px;
+        }
+
+        @media (max-width: 600px) {
+            .directory-container {
+                grid-template-columns: 1fr;
+                padding: 0 15px;
+            }
+
+            .product-card {
+                padding: 10px;
+            }
+
+            .product-image {
+                height: 120px;
+            }
         }
     </style>
 </head>
 <body>
 
-<h1 style="text-align: center; color: #495057; font-size: 32px; margin-bottom: 20px;">Enter Sales Here</h1>
+<h1>Enter Sales Here</h1>
 
-<button class="back-button" onclick="window.location.href='/welcome/'">Back</button>
+<a href="/welcome/" class="back-button">Back</a>
 
-<form action="/sales/checkout" method="GET">
-    <div class="directory-container">
-        {% for product in products %}
-        <div class="product-card">
-            <div class="checkbox-container">
-                <input type="checkbox" id="{{ product.product_id }}" name="selected_products" value="{{ product.product_name }}" onclick="toggleProceedButton()">
+<div class="scroll-container">
+    <form action="/sales/checkout" method="GET">
+        <div class="directory-container">
+            {% for product in products %}
+            <div class="product-card">
+                <div class="checkbox-container">
+                    <input type="checkbox" id="{{ product.product_id }}" name="selected_products" value="{{ product.product_name }}" onclick="toggleProceedButton()">
+                </div>
+                <img src="data:image/jpeg;base64,{{ product.image_data }}" alt="{{ product.product_name }}" class="product-image">
+                <div class="product-name">{{ product.product_name }}</div>
+                <div class="product-details" id="stock-{{ product.product_id }}">Stock: </div>
+                <div class="product-details" id="price-{{ product.product_id }}">Price: ₦</div>
             </div>
-            <img src="data:image/jpeg;base64,{{ product.image_data }}" alt="{{ product.product_name }}" class="product-image">
-            <div class="product-name"><p>{{ product.product_name }}</p></div>
-            <div class="product-details">
-                <p id="stock-{{ product.product_id }}">Stock: </p>
-            </div>
-            <div class="product-details">
-                <p id="price-{{ product.product_id }}">Price: ₦</p>
-            </div>
+            {% endfor %}
         </div>
-        {% endfor %}
-    </div>
 
-    <button type="button" id="proceedButton" class="proceed-button" onclick="submitForm()">Checkout</button>
-</form>
+        <button type="button" id="proceedButton" class="proceed-button" onclick="submitForm()">Checkout</button>
+    </form>
+</div>
+
 <script>
     function toggleProceedButton() {
         const checkboxes = document.querySelectorAll('input[name="selected_products"]:checked');
@@ -149,11 +190,8 @@
     document.addEventListener("DOMContentLoaded", function() {
         const socket = new WebSocket("ws://localhost:8000/ws/sales");
 
-        socket.addEventListener('open', function (event) {
+        socket.addEventListener('open', function () {
             console.log('WebSocket connection established.');
-        });
-        socket.addEventListener('close', function (event) {
-            console.log('WebSocket connection closed.');
         });
 
         socket.addEventListener('message', function (event) {
@@ -167,44 +205,33 @@
 
         function updateData(data) {
             data.forEach(product => {
-                if (product.id && product.stock !== undefined && product.price !== undefined) {
-                    const stockElement = document.getElementById(`stock-${product.id}`);
-                    const priceElement = document.getElementById(`price-${product.id}`);
+                const stockElement = document.getElementById(`stock-${product.id}`);
+                const priceElement = document.getElementById(`price-${product.id}`);
 
-                    if (stockElement) {
-                        stockElement.textContent = `Stock: ${product.stock}`;
-                    }
-                    if (priceElement) {
-                        priceElement.textContent = `Price: ₦${product.price}`;
-                    }
+                if (stockElement) {
+                    stockElement.textContent = `Stock: ${product.stock}`;
+                }
+
+                if (priceElement) {
+                    priceElement.textContent = `Price: ₦${product.price}`;
                 }
             });
         }
     });
 
     function submitForm() {
-        // Get all checked checkboxes
         const checkboxes = document.querySelectorAll('input[name="selected_products"]:checked');
         const selectedProducts = [];
-
-        // Iterate over checked checkboxes and collect their values
         checkboxes.forEach(checkbox => {
-            selectedProducts.push({
-                product_name: checkbox.value
-            });
+            selectedProducts.push({ product_name: checkbox.value });
         });
 
-            // Build the query string for the URL
         const queryParams = new URLSearchParams();
-
         selectedProducts.forEach(product => {
             queryParams.append('product', product.product_name);
         });
 
-        // Create the redirect URL with the query string
-        const redirectUrl = `/sales/checkout?${queryParams}`;
-
-        // Redirect the user to the URL with the query parameters
+        const redirectUrl = `/sales/checkout?${queryParams.toString()}`;
         window.location.href = redirectUrl;
     }
 </script>

@@ -15,7 +15,7 @@
         }
 
         .container {
-            max-width: 900px;
+            max-width: 1200px;
             margin: 40px auto;
             padding: 25px;
             background-color: #ffffff;
@@ -40,23 +40,27 @@
             display: inline-block;
             text-decoration: none;
             transition: background-color 0.3s ease;
-            float: right;
+            margin-bottom: 15px;
         }
 
         button:hover {
             background-color: #87CEFA;
         }
 
+        /* Add scrollable container for table */
+        .table-container {
+            overflow-x: auto;
+        }
+
         table {
             width: 100%;
             border-collapse: collapse;
             margin-top: 20px;
-            overflow-x: auto;
-            display: block;
+            min-width: 800px; /* Ensures horizontal scroll if content exceeds */
         }
 
         th, td {
-            padding: 12px;
+            padding: 15px;
             text-align: left;
             border-bottom: 1px solid #dee2e6;
             font-size: 1rem;
@@ -64,9 +68,9 @@
         }
 
         th {
-            background-color: #e9ecef;
-            color: #495057;
-            font-weight: 600;
+            background-color: #f1f1f1;
+            color: #343a40;
+            font-weight: bold;
         }
 
         td a {
@@ -80,62 +84,18 @@
         }
 
         @media (max-width: 768px) {
-            .container {
-                padding: 20px;
-            }
-
-            h1 {
-                font-size: 1.5rem;
+            table {
+                font-size: 0.9rem;
             }
 
             th, td {
                 padding: 10px;
-                font-size: 0.9rem;
             }
 
             button {
                 width: 100%;
-                margin-bottom: 15px;
-                padding: 10px;
                 text-align: center;
-            }
-
-            th, td {
-                white-space: normal;
-            }
-        }
-
-        @media (max-width: 480px) {
-            th, td {
-                display: block;
-                text-align: right;
-                font-size: 0.85rem;
-            }
-
-            th {
-                text-align: left;
-                background-color: transparent;
-                padding-left: 0;
-            }
-
-            td {
-                border-bottom: 1px solid #dee2e6;
-                position: relative;
-                padding-left: 50%;
-                text-align: left;
-            }
-
-            td:before {
-                content: attr(data-label);
-                position: absolute;
-                left: 0;
-                width: 45%;
-                padding-left: 15px;
-                font-weight: bold;
-                text-align: left;
-                background-color: #e9ecef;
-                color: #495057;
-                border-right: 1px solid #dee2e6;
+                padding: 10px;
             }
         }
     </style>
@@ -145,34 +105,36 @@
     <div class="container">
         <h1>Sales Report Update</h1>
         <button onclick="window.location.href='/welcome/'">Back</button>
-        <table>
-            <thead>
-                <tr>
-                    <th>Date</th>
-                    <th>Customer Name</th>
-                    <th>Customer Email</th>
-                    <th>Attendant</th>
-                    <th>Payment Method</th>
-                    <th>Product Name</th>
-                    <th>Sales Quantity</th>
-                    <th>Sales Price</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for order_item in order_items %}
-                <tr>
-                    <td data-label="Date"><a href="/sales/update/{{ order_item.product.product_name }}/{{ order_item.id }}">{{ order_item.created_at }}</a></td>
-                    <td data-label="Customer Name">{{ order_item.order.customer_name }}</td>
-                    <td data-label="Customer Email">{{ order_item.order.customer_email }}</td>
-                    <td data-label="Attendant">{{ order_item.order.user.fullname }}</td>
-                    <td data-label="Payment Method">{{ order_item.order.payment_method }}</td>
-                    <td data-label="Product Name">{{ order_item.product.product_name }}</td>
-                    <td data-label="Sales Quantity">{{ order_item.quantity }}</td>
-                    <td data-label="Sales Price">{{ order_item.sales_price }}</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Customer Name</th>
+                        <th>Customer Email</th>
+                        <th>Attendant</th>
+                        <th>Payment Method</th>
+                        <th>Product Name</th>
+                        <th>Sales Quantity</th>
+                        <th>Sales Price</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for order_item in order_items %}
+                    <tr>
+                        <td data-label="Date"><a href="/sales/update/{{ order_item.product.product_name }}/{{ order_item.id }}">{{ order_item.created_at }}</a></td>
+                        <td data-label="Customer Name">{{ order_item.order.customer_name }}</td>
+                        <td data-label="Customer Email">{{ order_item.order.customer_email }}</td>
+                        <td data-label="Attendant">{{ order_item.order.user.fullname }}</td>
+                        <td data-label="Payment Method">{{ order_item.order.payment_method }}</td>
+                        <td data-label="Product Name">{{ order_item.product.product_name }}</td>
+                        <td data-label="Sales Quantity">{{ order_item.quantity }}</td>
+                        <td data-label="Sales Price">{{ order_item.sales_price }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
     </div>
 </body>
 

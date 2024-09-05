@@ -19,6 +19,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            flex-wrap: wrap;
         }
 
         .navbar h1 {
@@ -31,6 +32,7 @@
             margin: 0;
             padding: 0;
             display: flex;
+            flex-wrap: wrap;
         }
 
         .navbar ul li {
@@ -49,10 +51,7 @@
             background-color: #0059b3;
         }
 
-        .navbar ul li:hover .dropdown {
-            display: block;
-        }
-
+        /* Dropdown menu */
         .dropdown {
             display: none;
             position: absolute;
@@ -65,6 +64,9 @@
 
         .dropdown a {
             padding: 10px 20px;
+            display: block;
+            color: white;
+            text-decoration: none;
             white-space: nowrap;
         }
 
@@ -72,26 +74,66 @@
             background-color: #0059b3;
         }
 
+        /* Show dropdown on hover */
+        .navbar ul li:hover .dropdown {
+            display: block;
+        }
+
         .content {
-            padding: 40px;
+            padding: 20px;
             text-align: center;
             background-color: white;
             box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
             margin: 20px auto;
-            max-width: 800px;
+            max-width: 90%;
             border-radius: 8px;
         }
 
         .content h2 {
             color: #333;
-            font-size: 28px;
-            margin-bottom: 20px;
+            font-size: 24px;
+            margin-bottom: 15px;
         }
 
         .content p {
             font-size: 16px;
             color: #666;
             line-height: 1.6;
+        }
+
+        /* Media query for smaller screens */
+        @media screen and (max-width: 768px) {
+            .navbar {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .navbar ul {
+                flex-direction: column;
+                width: 100%;
+            }
+
+            .navbar ul li {
+                margin-left: 0;
+                width: 100%;
+            }
+
+            .navbar ul li a {
+                padding: 15px;
+            }
+
+            .content {
+                max-width: 100%;
+                margin: 10px;
+            }
+
+            .content h2 {
+                font-size: 22px;
+            }
+
+            .content p {
+                font-size: 14px;
+            }
         }
     </style>
 </head>
@@ -100,21 +142,21 @@
         <h1>Company Logo</h1>
         <ul>
             <li>
-                <a>Users</a>
+                <a href="#">Users</a>
                 <div class="dropdown">
                     <a href="/user/enter-new-user">Register New User</a>
                     <a href="/user/user_list">Update User Info</a>
                 </div>
             </li>
             <li>
-                <a>Product Category</a>
+                <a href="#">Product Category</a>
                 <div class="dropdown">
                     <a href="/enter/product-category">Register New Product Type</a>
                     <a href="/product_category">Update Product Type Info</a>
                 </div>
             </li>
             <li>
-                <a>Purchase</a>
+                <a href="#">Purchase</a>
                 <div class="dropdown">
                     <a href="/purchase/product-category">Register New Purchase</a>
                     <a href="/purchase/purchase-data">Update Purchase Info</a>
@@ -122,26 +164,22 @@
                 </div>
             </li>
             <li>
-                <a>Sales</a>
+                <a href="#">Sales</a>
                 <div class="dropdown">
-                    <a href="/sales/sales-platform">Enter New sales</a>
+                    <a href="/sales/sales-platform">Enter New Sales</a>
                     <a href="/sales/report/update">Update Sales Data</a>
                     <a href="/sales/report/delete">Delete Sales</a>
                 </div>
             </li>
-             <li>
-                <a href="#">Reports</a>
+            <li>
+                <a href="">Reports</a>
                 <div class="dropdown">
-                    <a href="#">Purchase</a>
+                    <a href="/purchase/report">Purchase</a>
                     <a href="#">Sales</a>
-                    <a href="#">Stock</a>
                 </div>
             </li>
             <li>
                 <a href="/logout">Logout</a>
-                <div class="dropdown">
-
-                </div>
             </li>
         </ul>
     </div>

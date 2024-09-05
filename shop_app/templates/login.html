@@ -1,112 +1,129 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Company Name</title>
+    <title>Company Name - Login</title>
     <style>
         body {
-            background-color: lightgreen; /* Green background */
-            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #e0eafc, #cfdef3);
+            font-family: 'Helvetica Neue', Arial, sans-serif;
             margin: 0;
             padding: 0;
-            height: 100vh;
             display: flex;
+            height: 100vh;
             align-items: center;
             justify-content: center;
+            color: #444;
         }
 
         .content-wrapper {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            width: 80%;
-        }
-
-        .images-box {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-            margin-right: 50px;
-        }
-
-        .images-box img {
-            width: 200px;
-            height: 200px;
-            object-fit: cover;
-            border-radius: 8px;
-            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-        }
-
-        .login-container {
-            background: #fff;
+            width: 400px;
             padding: 40px;
-            border-radius: 8px;
-            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-            max-width: 300px;
-            width: 100%;
+            background-color: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
         }
 
         .login-container h2 {
-            margin-bottom: 20px;
-            font-size: 24px;
-            color: #333;
+            text-align: center;
+            font-size: 28px;
+            color: #0077b6;
+            margin-bottom: 30px;
+            font-weight: bold;
+        }
+
+        .login-container form {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
         }
 
         .login-container label {
-            display: block;
             font-size: 14px;
-            margin-bottom: 5px;
+            font-weight: 500;
             color: #333;
         }
 
         .login-container input[type="email"],
         .login-container input[type="password"] {
             width: 100%;
-            padding: 10px;
-            margin-bottom: 20px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            box-sizing: border-box;
-            font-size: 14px;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 16px;
+            background-color: #f9f9f9;
+            outline: none;
+            transition: border-color 0.3s ease;
+        }
+
+        .login-container input[type="email"]:focus,
+        .login-container input[type="password"]:focus {
+            border-color: #0077b6;
         }
 
         .login-container input[type="submit"] {
             width: 100%;
-            padding: 10px;
-            background-color: #007BFF;
+            padding: 12px 15px;
+            background-color: #0077b6;
             border: none;
-            border-radius: 4px;
+            border-radius: 6px;
             color: white;
             font-size: 16px;
+            font-weight: bold;
             cursor: pointer;
+            transition: background-color 0.3s ease;
         }
 
         .login-container input[type="submit"]:hover {
-            background-color: #0056b3;
+            background-color: #005f8d;
+        }
+
+        .forgot-password {
+            text-align: right;
+            font-size: 14px;
+        }
+
+        .forgot-password a {
+            color: #0077b6;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .forgot-password a:hover {
+            color: #005f8d;
+        }
+
+        /* Mobile view adjustments */
+        @media (max-width: 768px) {
+            .content-wrapper {
+                width: 90%;
+                padding: 30px;
+            }
         }
     </style>
 </head>
+
 <body>
     <div class="content-wrapper">
-        <div class="images-box">
-            <img src="{{ url_for('static', path='images/rod1.jpeg') }}" alt="Image 1">
-            <img src="{{ url_for('static', path='images/cement 2.jpeg') }}" alt="Image 2">
-            <img src="{{ url_for('static', path='images/rod3.jpeg') }}" alt="Image 3">
-            <img src="{{ url_for('static', path='images/cement 1.jpeg') }}" alt="Image 4">
-        </div>
         <div class="login-container">
-            <h2>Login</h2>
+            <h2>Welcome Back!</h2>
             <form action="/login" method="post">
                 <label for="email">Email:</label>
-                <input type="email" id="email" name="username" required>
+                <input type="email" id="email" name="username" placeholder="Enter your email" required>
 
                 <label for="password">Password:</label>
-                <input type="password" id="password" name="password" required>
+                <input type="password" id="password" name="password" placeholder="Enter your password" required>
+
+                <div class="forgot-password">
+                    <a href="">Forgot Password?</a>
+                </div>
 
                 <input type="submit" value="Login">
             </form>
         </div>
     </div>
 </body>
+
 </html>

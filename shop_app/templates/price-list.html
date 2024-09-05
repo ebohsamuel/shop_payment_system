@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Products</title>
+    <title>Product Price List</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -14,18 +14,19 @@
         }
 
         .container {
-            max-width: 900px;
+            max-width: 1000px;
             margin: 40px auto;
             padding: 25px;
             background-color: #ffffff;
             border-radius: 8px;
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            overflow-x: auto;
         }
 
         h1 {
             color: #343a40;
-            font-size: 1.8rem;
-            margin-bottom: 25px;
+            font-size: 2rem;
+            margin-bottom: 20px;
             text-align: center;
         }
 
@@ -33,9 +34,9 @@
             background-color: #004080;
             color: #ffffff;
             border: none;
-            padding: 10px 20px;
-            font-size: 1rem;
-            border-radius: 4px;
+            padding: 12px 24px;
+            font-size: 1.1rem;
+            border-radius: 5px;
             cursor: pointer;
             display: inline-block;
             margin-bottom: 20px;
@@ -45,7 +46,7 @@
         }
 
         button:hover {
-            background-color: #87CEFA;
+            background-color: #003366;
         }
 
         table {
@@ -55,7 +56,7 @@
         }
 
         th, td {
-            padding: 14px;
+            padding: 16px;
             text-align: left;
             border-bottom: 1px solid #dee2e6;
             font-size: 1rem;
@@ -77,19 +78,36 @@
             text-decoration: underline;
         }
 
-        @media (max-width: 600px) {
+        /* Responsive Design */
+        @media (max-width: 768px) {
             .container {
                 padding: 15px;
-            }
-
-            th, td {
-                padding: 10px;
-                font-size: 0.9rem;
             }
 
             button {
                 width: 100%;
                 margin-bottom: 10px;
+            }
+
+            th, td {
+                padding: 12px;
+                font-size: 0.9rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 1.5rem;
+            }
+
+            th, td {
+                padding: 10px;
+                font-size: 0.85rem;
+            }
+
+            button {
+                padding: 10px;
+                font-size: 0.9rem;
             }
         }
     </style>
