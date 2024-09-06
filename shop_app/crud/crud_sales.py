@@ -1,8 +1,9 @@
 from sqlalchemy.orm import Session
 from shop_app.schemas import schemas_sales
 from shop_app import models
-from sqlalchemy import desc
+from sqlalchemy import desc, between
 from fastapi import WebSocket, WebSocketDisconnect
+from datetime import datetime
 
 
 def create_new_order(db: Session, order_details: schemas_sales.OrderCreate):
@@ -31,38 +32,40 @@ def get_order_item_by_id(db: Session, order_item_id: int):
     return db.query(models.OrderItem).filter(models.OrderItem.id == order_item_id).first()
 
 
-def get_all_oder_item(db: Session):
+def get_all_order_item(db: Session):
     return db.query(models.OrderItem).order_by(desc(models.OrderItem.created_at)).all()
 
-"""
-def update_purchase(db: Session, purchase_details: dict, purchase_id: int):
-    db_purchase = get_purchase_by_id(db, purchase_id)
-    if purchase_details["date_purchased"]:
-        db_purchase.date_purchased = purchase_details["date_purchased"]
-    if purchase_details["Quantity"]:
-        db_purchase.Quantity = purchase_details["Quantity"]
-    if purchase_details["per_cost"]:
-        db_purchase.per_cost = purchase_details["per_cost"]
-    if purchase_details["total_cost"]:
-        db_purchase.total_cost = purchase_details["total_cost"]
-    db.commit()
-    db.refresh(db_purchase)
-    return db_purchase
 
-
-def get_all_purchase(db: Session):
-    purchases = db.query(
-        models.ProductPurchaseTracking).order_by(desc(models.ProductPurchaseTracking.date_purchased)).all()
+def get_all_order_item_between_dates(db: Session, start, end):
+    start_datetime = datetime.combine(start, datetime.min.time())
+    end_datetime = datetime.combine(end, datetime.max.time())
+    items = db.query(models.OrderItem).filter(between(models.OrderItem.created_at, start_datetime, end_datetime)
+    ).order_by(desc(models.OrderItem.created_at)).all()
     return [{
-        "date_purchased": purchase.date_purchased.isoformat(),
-        "product_name": purchase.product_name,
-        "product_category_id": purchase.product_category_id,
-        "Quantity": purchase.Quantity,
-        "per_cost": purchase.per_cost,
-        "total_cost": purchase.total_cost,
-        "id": purchase.id,
-        "created_at": purchase.created_at.isoformat()
-    } for purchase in purchases]
+        "created_at": item.created_at.isoformat(),
+        "customer_name": item.order.customer_name,
+        "customer_email": item.order.customer_email,
+        "attendant": item.order.user.fullname,
+        "payment_method": item.order.payment_method,
+        "product_name": item.product.product_name,
+        "quantity": item.quantity,
+        "sales_price": item.sales_price,
+        "amount": item.sales_price*item.quantity
+        } for item in items]
+
+
+def get_all_jsonable_order_item(db: Session):
+    items = get_all_order_item(db)
+    return [{
+        "created_at": item.created_at.isoformat(),
+        "customer_name": item.order.customer_name,
+        "customer_email": item.order.customer_email,
+        "attendant": item.order.user.fullname ,
+        "payment_method": item.order.payment_method,
+        "product_name": item.product.product_name,
+        "quantity": item.quantity,
+        "sales_price": item.sales_price
+    } for item in items]
 
 
 class WebSocketManager:
@@ -76,15 +79,14 @@ class WebSocketManager:
         self.active_connections.discard(websocket)
 
     async def broadcast(self, db: Session):
-        purchases = get_all_purchase(db)
+        sales = get_all_jsonable_order_item(db)
 
         for connection in list(self.active_connections):
             try:
-                await connection.send_json(purchases)
+                await connection.send_json(sales)
             except (WebSocketDisconnect, RuntimeError) as e:
                 print(f"Error sending data: {e}")
                 self.remove_connection(connection)
             except Exception as e:
                 print(f"Unexpected error while sending data: {e}")
                 self.remove_connection(connection)
-"""

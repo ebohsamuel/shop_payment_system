@@ -15,7 +15,7 @@ async def sales_report(
         request: Request,
         db: Session = Depends(get_db)
 ):
-    db_order_items = crud_sales.get_all_oder_item(db)
+    db_order_items = crud_sales.get_all_order_item(db)
     for order_item in db_order_items:
         order_item.created_at = order_item.created_at.replace(microsecond=0)
     return templates.TemplateResponse(
@@ -43,7 +43,7 @@ async def update_sales_quantity_form(
     db.refresh(db_product)
     db.refresh(db_order)
 
-    db_order_items = crud_sales.get_all_oder_item(db)
+    db_order_items = crud_sales.get_all_order_item(db)
     for order_item in db_order_items:
         order_item.created_at = order_item.created_at.replace(microsecond=0)
     return templates.TemplateResponse(

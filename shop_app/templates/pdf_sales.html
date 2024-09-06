@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sales Report</title>
+    <style>
+        body {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            font-size: 28px;
+            color: #333;
+            text-align: center;
+            text-transform: uppercase;
+            margin-bottom: 30px;
+            border-bottom: 3px solid #007bff;
+            padding-bottom: 10px;
+        }
+
+        .summary {
+            margin-bottom: 20px;
+            padding: 15px;
+            background-color: #e9f7ff;
+            border-left: 5px solid #007bff;
+            border-radius: 4px;
+        }
+
+        .summary div {
+            font-size: 18px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            font-size: 16px;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px 15px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f1f1f1;
+            font-weight: bold;
+            color: #007bff;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        tr:hover {
+            background-color: #f1f1f1;
+        }
+
+        .no-sales {
+            text-align: center;
+            color: #888;
+            font-size: 18px;
+            margin: 30px 0;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            font-size: 14px;
+            color: #777;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                margin: 20px;
+                padding: 15px;
+            }
+
+            h1 {
+                font-size: 24px;
+            }
+
+            th, td {
+                font-size: 14px;
+            }
+        }
+
+        @media print {
+            body {
+                margin: 0;
+                padding: 0;
+                background-color: white;
+            }
+
+            .container {
+                border: none;
+                box-shadow: none;
+                margin: 0;
+                padding: 0;
+            }
+
+            h1 {
+                font-size: 22px;
+                margin-bottom: 20px;
+            }
+
+            table, th, td {
+                border: 1px solid #000;
+                padding: 10px;
+            }
+
+            tr {
+                page-break-inside: avoid;
+            }
+
+            .footer {
+                margin-top: 20px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Sales Report</h1>
+
+        <div class="summary">
+            <div>Total Sales Amount: {{ total_amount }}</div>
+        </div>
+
+        {% if sales %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Customer Name</th>
+                    <th>Customer Email</th>
+                    <th>Attendant</th>
+                    <th>Payment Method</th>
+                    <th>Product Name</th>
+                    <th>Quantity</th>
+                    <th>Sales Price</th>
+                    <th>Total Amount</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in sales %}
+                <tr>
+                    <td>{{ item.created_at }}</td>
+                    <td>{{ item.customer_name }}</td>
+                    <td>{{ item.customer_email }}</td>
+                    <td>{{ item.attendant }}</td>
+                    <td>{{ item.payment_method }}</td>
+                    <td>{{ item.product_name }}</td>
+                    <td>{{ item.quantity }}</td>
+                    <td>{{ item.sales_price }}</td>
+                    <td>{{ item.amount }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <div class="no-sales">No sales recorded.</div>
+        {% endif %}
+
+        <div class="footer">
+            <p>Report generated on: <span id="currentDatetime"></span></p>
+        </div>
+    </div>
+
+    <script>
+        // JavaScript to get the current date and time
+        const currentDateTime = new Date();
+        document.getElementById('currentDatetime').textContent = currentDateTime.toLocaleString();
+    </script>
+</body>
+
+</html>

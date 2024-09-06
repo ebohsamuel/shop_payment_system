@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sales Report</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f8f9fa;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 25px;
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            color: #343a40;
+            font-size: 1.8rem;
+            margin-bottom: 25px;
+            text-align: center;
+        }
+
+        .button-container {
+            display: flex;
+            justify-content: flex-start;
+            margin-bottom: 20px;
+        }
+
+        .filter-section {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            justify-content: space-between;
+        }
+
+        .filter-section div {
+            display: flex;
+            align-items: center;
+        }
+
+        .filter-section label {
+            margin-right: 10px;
+            font-weight: bold;
+        }
+
+        .filter-section input[type="date"] {
+            padding: 10px;
+            font-size: 1rem;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            margin-right: 15px;
+        }
+
+        button {
+            background-color: #004080;
+            color: #ffffff;
+            border: none;
+            padding: 10px 20px;
+            font-size: 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: background-color 0.3s ease;
+            margin-right: 10px;
+        }
+
+        button:hover {
+            background-color: #87CEFA;
+        }
+
+        .table-container {
+            overflow-x: auto;
+            margin-top: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 1000px; /* Ensure table is wide enough */
+        }
+
+        th, td {
+            padding: 14px;
+            text-align: left;
+            border-bottom: 1px solid #dee2e6;
+            font-size: 1rem;
+            white-space: nowrap; /* Prevent text wrapping */
+        }
+
+        th {
+            background-color: #e9ecef;
+            color: #495057;
+            font-weight: 600;
+        }
+
+        td a {
+            color: #007bff;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        td a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 15px;
+            }
+
+            th, td {
+                padding: 10px;
+                font-size: 0.9rem;
+            }
+
+            button {
+                width: 100%;
+                text-align: center;
+                margin: 5px 0;
+            }
+
+            table {
+                min-width: 600px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Sales Report</h1>
+
+        <!-- Back button inside a container -->
+        <div class="button-container">
+            <button onclick="window.location.href='/welcome/'">Back</button>
+        </div>
+
+        <!-- Filter Section with Start and End Date -->
+        <div class="filter-section">
+            <div>
+                <label for="startDate">Start Date:</label>
+                <input type="date" id="startDate" name="startDate">
+                <label for="endDate">End Date:</label>
+                <input type="date" id="endDate" name="endDate">
+            </div>
+            <div>
+                <button id="exportPDF" onclick="exportPdf()">Export to PDF</button>
+                <button id="exportExcel" onclick="exportExcel()">Export to Excel</button>
+            </div>
+        </div>
+
+        <!-- Scrollable table container -->
+        <div class="table-container">
+            <table id="salesTable">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Customer Name</th>
+                        <th>Customer Email</th>
+                        <th>Attendant</th>
+                        <th>Payment Method</th>
+                        <th>Product Name</th>
+                        <th>Sales Quantity</th>
+                        <th>Sales Price</th>
+                        <th>Total Amount</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Rows will be inserted here by JavaScript -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const socket = new WebSocket("ws://localhost:8000/ws/sales/report");
+
+            socket.onopen = function () {
+                console.log("WebSocket connection established.");
+            };
+
+            socket.onmessage = function (event) {
+                const data = JSON.parse(event.data);
+                updateTable(data);
+            };
+
+            socket.onclose = function () {
+                console.log("WebSocket connection closed.");
+            };
+
+            socket.onerror = function (error) {
+                console.error("WebSocket error:", error);
+            };
+
+            function updateTable(data) {
+                const tableBody = document.querySelector("#salesTable tbody");
+                tableBody.innerHTML = ""; // Clear existing rows
+
+                data.forEach(sale => {
+                    const row = document.createElement("tr");
+
+                    row.innerHTML = `
+                        <td>${sale.created_at}</td>
+                        <td>${sale.customer_name}</td>
+                        <td>${sale.customer_email}</td>
+                        <td>${sale.attendant}</td>
+                        <td>${sale.payment_method}</td>
+                        <td>${sale.product_name}</td>
+                        <td>${sale.quantity}</td>
+                        <td>${sale.sales_price}</td>
+                        <td>${sale.sales_price*sale.quantity}</td>
+                    `;
+
+                    tableBody.appendChild(row);
+                });
+            }
+        });
+
+        function exportPdf() {
+            const startDate = document.getElementById("startDate").value;
+            const endDate = document.getElementById("endDate").value;
+            if (!startDate || !endDate) {
+                alert('Both start date and end date must be selected');
+
+                document.getElementById("startDate").value = "";
+                document.getElementById("endDate").value = "";
+
+                for (let i = 1; i < rows.length; i++) {
+                    rows[i].style.display = "";
+                }
+
+                return;
+            }
+            const queryParams = new URLSearchParams();
+
+            queryParams.append('start', startDate);
+            queryParams.append('end', endDate);
+
+            const redirectUrl = `/sales/pdf?${queryParams.toString()}`;
+            window.location.href = redirectUrl;
+        }
+
+        function exportExcel() {
+            const startDate = document.getElementById("startDate").value;
+            const endDate = document.getElementById("endDate").value;
+            if (!startDate || !endDate) {
+                alert('Both start date and end date must be selected');
+
+                document.getElementById("startDate").value = "";
+                document.getElementById("endDate").value = "";
+
+                for (let i = 1; i < rows.length; i++) {
+                    rows[i].style.display = "";
+                }
+
+                return;
+            }
+            const queryParams = new URLSearchParams();
+
+            queryParams.append('start', startDate);
+            queryParams.append('end', endDate);
+
+            const redirectUrl = `/sales/excel?${queryParams.toString()}`;
+            window.location.href = redirectUrl;
+        }
+    </script>
+</body>
+
+</html>

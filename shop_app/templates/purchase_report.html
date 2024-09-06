@@ -4,89 +4,87 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Update Purchase</title>
+    <title>Purchase Report</title>
     <style>
         body {
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 0;
-            background-color: #f0f2f5;
+            background-color: #f8f9fa;
+            color: #343a40;
         }
 
         .container {
-            max-width: 1000px;
-            margin: 50px auto;
-            padding: 30px;
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 25px;
             background-color: #ffffff;
-            border-radius: 10px;
-            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
         }
 
         h1 {
-            color: #343a40;
             font-size: 2rem;
-            margin-bottom: 30px;
+            margin-bottom: 25px;
             text-align: center;
-            font-weight: bold;
         }
 
-        .button-container {
+        .filter-section {
             display: flex;
             justify-content: space-between;
-            margin-bottom: 20px;
             align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .filter-section input[type="date"] {
+            padding: 10px;
+            font-size: 1rem;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            margin-right: 15px;
         }
 
         button {
             background-color: #004080;
             color: #ffffff;
             border: none;
-            padding: 10px 20px;
+            padding: 12px 25px;
             font-size: 1rem;
             border-radius: 4px;
             cursor: pointer;
+            display: inline-block;
+            text-decoration: none;
             transition: background-color 0.3s ease;
+            margin-bottom: 15px;
         }
 
         button:hover {
             background-color: #87CEFA;
         }
 
-        .date-filter {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        input[type="date"] {
-            padding: 8px;
-            border: 1px solid #ced4da;
-            border-radius: 4px;
-            font-size: 1rem;
-        }
-
         .table-container {
             overflow-x: auto;
-            margin-top: 20px;
         }
 
         table {
             width: 100%;
             border-collapse: collapse;
-            min-width: 900px;
+            margin-top: 20px;
+            min-width: 800px;
         }
 
         th, td {
-            padding: 14px;
+            padding: 15px;
             text-align: left;
             border-bottom: 1px solid #dee2e6;
             font-size: 1rem;
+            white-space: nowrap;
         }
 
         th {
-            background-color: #e9ecef;
-            color: #495057;
-            font-weight: 600;
+            background-color: #f1f1f1;
+            color: #343a40;
+            font-weight: bold;
         }
 
         td a {
@@ -99,33 +97,19 @@
             text-decoration: underline;
         }
 
-        .export-buttons {
-            display: flex;
-            gap: 10px;
-        }
-
-        @media (max-width: 600px) {
-            .container {
-                padding: 20px;
+        @media (max-width: 768px) {
+            table {
+                font-size: 0.9rem;
             }
 
             th, td {
                 padding: 10px;
-                font-size: 0.9rem;
             }
 
             button {
                 width: 100%;
                 text-align: center;
-            }
-
-            table {
-                min-width: 600px;
-            }
-
-            .date-filter {
-                flex-direction: column;
-                align-items: flex-start;
+                padding: 10px;
             }
         }
     </style>
@@ -133,117 +117,137 @@
 
 <body>
     <div class="container">
-        <h1>Update Purchase</h1>
+        <h1>Purchase Report</h1>
+        <button onclick="window.location.href='/welcome/'">Back</button>
 
-        <!-- Button container with back, PDF, and Excel export -->
-        <div class="button-container">
-            <button onclick="window.location.href='/welcome/'">Back</button>
-            <div class="export-buttons">
-                <button onclick="exportToPDF()">Export to PDF</button>
-                <button onclick="exportToExcel()">Export to Excel</button>
+        <!-- Filter Section with Start and End Date -->
+        <div class="filter-section">
+            <div>
+                <label for="startDate">Start Date: </label>
+                <input type="date" id="startDate" name="startDate">
+                <label for="endDate">End Date: </label>
+                <input type="date" id="endDate" name="endDate">
+            </div>
+            <div>
+                <button onclick="filterByDateRange()">Filter</button>
+                <!-- Export PDF and Excel Buttons -->
+                <button id="exportPDF" onclick="exportPdf()">Export to PDF</button>
+                <button id="exportExcel" onclick="exportExcel()">Export to Excel</button>
             </div>
         </div>
 
-        <!-- Date Filter Inputs -->
-        <div class="date-filter">
-            <label for="startDate">Start Date:</label>
-            <input type="date" id="startDate">
-            <label for="endDate">End Date:</label>
-            <input type="date" id="endDate">
-            <button onclick="filterByDate()">Filter</button>
-        </div>
-
-        <!-- Scrollable table container -->
         <div class="table-container">
-            <table id="purchaseTable">
+            <table id="salesTable">
                 <thead>
                     <tr>
-                        <th>Date of Purchase</th>
-                        <th>Name of Product</th>
+                        <th>Date Purchased</th>
+                        <th>Product Name</th>
+                        <th>Created At</th>
                         <th>Quantity</th>
-                        <th>Per Cost</th>
+                        <th>Cost per Unit</th>
                         <th>Total Cost</th>
-                        <th>Date of Entry</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <!-- Rows will be inserted here by JavaScript -->
+                    {% for item in purchase_items %}
+                    <tr>
+                        <td data-label="Date Purchased">{{ item.date_purchased }}</td>
+                        <td data-label="Product Name">{{ item.product_name }}</td>
+                        <td data-label="Created At">{{ item.created_at }}</td>
+                        <td data-label="Quantity">{{ item.Quantity }}</td>
+                        <td data-label="Cost per Unit">{{ item.per_cost }}</td>
+                        <td data-label="Total Cost">{{ item.total_cost }}</td>
+                    </tr>
+                    {% endfor %}
                 </tbody>
             </table>
         </div>
     </div>
-    <!-- Include jsPDF for PDF export -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
-    <!-- Include SheetJS for Excel export -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.16.9/xlsx.full.min.js"></script>
     <script>
-    document.addEventListener("DOMContentLoaded", function () {
-        const socket = new WebSocket("ws://localhost:8000/ws/purchases");
-        let purchasesData = [];  // Store the full data set received via WebSocket
-
-        socket.onopen = function () {
-            console.log("WebSocket connection established.");
-        };
-
-        socket.onmessage = function (event) {
-            const data = JSON.parse(event.data);
-            purchasesData = data;  // Store the data globally
-            updateTable(data);
-        };
-
-        socket.onclose = function () {
-            console.log("WebSocket connection closed.");
-        };
-
-        socket.onerror = function (error) {
-            console.error("WebSocket error:", error);
-        };
-
-        function updateTable(data) {
-            const tableBody = document.querySelector("#purchaseTable tbody");
-            tableBody.innerHTML = "";  // Clear existing rows
-
-            data.forEach(purchase => {
-                const row = document.createElement("tr");
-
-                row.innerHTML = `
-                    <td><a href="/purchase/${purchase.product_name}/${purchase.id}/update">${purchase.date_purchased}</a></td>
-                    <td>${purchase.product_name}</td>
-                    <td>${purchase.Quantity}</td>
-                    <td>${purchase.per_cost}</td>
-                    <td>${purchase.total_cost}</td>
-                    <td>${purchase.created_at}</td>
-                `;
-
-                tableBody.appendChild(row);
-            });
-        }
-
-        // Filter function for date range
-        function filterByDate() {
+        function filterByDateRange() {
             const startDate = document.getElementById("startDate").value;
             const endDate = document.getElementById("endDate").value;
+            const table = document.getElementById("salesTable");
+            const rows = table.getElementsByTagName("tr");
 
             if (!startDate || !endDate) {
-                alert("Please select both start and end dates");
+                alert('Both start date and end date must be selected');
+
+                document.getElementById("startDate").value = "";
+                document.getElementById("endDate").value = "";
+
+                for (let i = 1; i < rows.length; i++) {
+                    rows[i].style.display = "";
+                }
+
                 return;
             }
 
-            const filteredData = purchasesData.filter(purchase => {
-                const purchaseDate = new Date(purchase.date_purchased);
-                return purchaseDate >= new Date(startDate) && purchaseDate <= new Date(endDate);
-            });
+            for (let i = 1; i < rows.length; i++) { // Start from 1 to skip header row
+                const dateCell = rows[i].getElementsByTagName("td")[0]; // Index 0 for 'Date Purchased' column
+                const dateText = dateCell.textContent || dateCell.innerText;
+                const rowDate = new Date(dateText);
 
-            updateTable(filteredData);
+                const start = new Date(startDate);
+                const end = new Date(endDate);
+
+                if (rowDate < start || rowDate > end) {
+                    rows[i].style.display = "none"; // Hide rows outside date range
+                } else {
+                    rows[i].style.display = ""; // Show rows within date range
+                }
+            }
         }
 
+        function exportPdf() {
+            const startDate = document.getElementById("startDate").value;
+            const endDate = document.getElementById("endDate").value;
+            if (!startDate || !endDate) {
+                alert('Both start date and end date must be selected');
 
-        // Attach event handlers to buttons
-        document.querySelector("button[onclick='filterByDate()']").addEventListener("click", filterByDate);
-    });
-</script>
+                document.getElementById("startDate").value = "";
+                document.getElementById("endDate").value = "";
 
+                for (let i = 1; i < rows.length; i++) {
+                    rows[i].style.display = "";
+                }
+
+                return;
+            }
+            const queryParams = new URLSearchParams();
+
+            queryParams.append('start', startDate);
+            queryParams.append('end', endDate);
+
+            const redirectUrl = `/purchase/pdf?${queryParams.toString()}`;
+            window.location.href = redirectUrl;
+        }
+
+        function exportExcel() {
+            const startDate = document.getElementById("startDate").value;
+            const endDate = document.getElementById("endDate").value;
+            if (!startDate || !endDate) {
+                alert('Both start date and end date must be selected');
+
+                document.getElementById("startDate").value = "";
+                document.getElementById("endDate").value = "";
+
+                for (let i = 1; i < rows.length; i++) {
+                    rows[i].style.display = "";
+                }
+
+                return;
+            }
+            const queryParams = new URLSearchParams();
+
+            queryParams.append('start', startDate);
+            queryParams.append('end', endDate);
+
+            const redirectUrl = `/purchase/excel?${queryParams.toString()}`;
+            window.location.href = redirectUrl;
+        }
+    </script>
 </body>
 
 </html>

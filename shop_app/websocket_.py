@@ -1,4 +1,4 @@
-from shop_app.crud import crud_purchase, crud_product
+from shop_app.crud import crud_purchase, crud_product, crud_sales
 from fastapi import Depends
 from shop_app.user_authentication import get_db
 from fastapi import APIRouter, WebSocket, WebSocketDisconnect
@@ -8,6 +8,7 @@ import asyncio
 router = APIRouter()
 ws_purchase_manager = crud_purchase.WebSocketManager()
 ws_sales_manager = crud_product.WebSocketManager()
+ws_sales_report_manager = crud_sales.WebSocketManager()
 
 
 @router.websocket("/ws/purchases")
@@ -49,4 +50,25 @@ async def websocket_endpoint(websocket: WebSocket, db: Session = Depends(get_db)
     finally:
         if websocket in ws_sales_manager.active_connections:
             ws_sales_manager.remove_connection(websocket)
+        await websocket.close()
+
+
+@router.websocket("/ws/sales/report")
+async def websocket_endpoint(websocket: WebSocket, db: Session = Depends(get_db)):
+    await websocket.accept()
+    ws_sales_report_manager.add_connection(websocket)
+    try:
+        while True:
+            # Broadcast data periodically
+            await ws_sales_report_manager.broadcast(db)
+            await asyncio.sleep(5)  # Adjust the sleep time as needed
+    except WebSocketDisconnect:
+        ws_sales_report_manager.remove_connection(websocket)
+        print("WebSocket disconnected")
+    except Exception as e:
+        ws_sales_report_manager.remove_connection(websocket)
+        print(f"Error: {e}")
+    finally:
+        if websocket in ws_sales_report_manager.active_connections:
+            ws_sales_report_manager.remove_connection(websocket)
         await websocket.close()

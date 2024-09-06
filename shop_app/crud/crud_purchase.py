@@ -25,8 +25,6 @@ def update_purchase(db: Session, purchase_details: dict, purchase_id: int):
         db_purchase.per_cost = purchase_details["per_cost"]
     if purchase_details["total_cost"]:
         db_purchase.total_cost = purchase_details["total_cost"]
-    db.commit()
-    db.refresh(db_purchase)
     return db_purchase
 
 

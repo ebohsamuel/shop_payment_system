@@ -12,8 +12,9 @@ router = APIRouter(dependencies=[Depends(check_admin)])
 
 
 @router.get("/purchase/purchase-data", response_class=HTMLResponse)
-async def purchase_list(request: Request):
-    return templates.TemplateResponse("purchase_list.html", {"request": request})
+async def purchase_list(request: Request, db: Session = Depends(get_db)):
+    purchase_items = crud_purchase.get_all_purchase(db)
+    return templates.TemplateResponse("purchase_list.html", {"request": request, "purchase_items": purchase_items})
 
 
 @router.get(
@@ -45,12 +46,11 @@ async def submit_purchase_update(
         total_cost: float | None = Form(default=None),
         db: Session = Depends(get_db),
 ):
+    db_product = None
     if quantity:
         db_product = crud_product.get_product_by_product_name(db, product_name)
         db_purchase = crud_purchase.get_purchase_by_id(db, purchase_id)
         db_product.stock = db_product.stock - db_purchase.Quantity + quantity
-        db.commit()
-        db.refresh(db_product)
 
     purchase_details = {
         "date_purchased": date_purchased,
@@ -58,5 +58,8 @@ async def submit_purchase_update(
         "per_cost": per_cost,
         "total_cost": total_cost
     }
-    db_purchase = crud_purchase.update_purchase(db,purchase_details,purchase_id)
+    db_purchase = crud_purchase.update_purchase(db, purchase_details, purchase_id)
+    db.commit()
+    db.refresh(db_purchase)
+    db.refresh(db_product)
     return templates.TemplateResponse("purchase_list.html", {"request": request})
