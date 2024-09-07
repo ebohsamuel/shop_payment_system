@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
 from shop_app.schemas import schemas_purchase
 from shop_app import models
-from sqlalchemy import desc
+from sqlalchemy import desc, between
 from fastapi import WebSocket, WebSocketDisconnect
 
 
@@ -26,6 +26,19 @@ def update_purchase(db: Session, purchase_details: dict, purchase_id: int):
     if purchase_details["total_cost"]:
         db_purchase.total_cost = purchase_details["total_cost"]
     return db_purchase
+
+
+def get_all_purchase_between_dates(db: Session, start, end):
+    purchases = db.query(models.ProductPurchaseTracking).filter(
+        between(models.ProductPurchaseTracking.date_purchased, start, end)
+        ).order_by(desc(models.ProductPurchaseTracking.date_purchased)).all()
+    return [{
+        "date_purchased": purchase.date_purchased,
+        "product_name": purchase.product_name,
+        "Quantity": purchase.Quantity,
+        "per_cost": purchase.per_cost,
+        "total_cost": purchase.total_cost,
+    } for purchase in purchases]
 
 
 def get_all_purchase(db: Session):
