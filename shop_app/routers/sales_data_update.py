@@ -1,5 +1,5 @@
 from fastapi.responses import HTMLResponse
-from shop_app.crud import crud_product, crud_sales
+from shop_app.crud import  crud_sales
 from fastapi import Request, Depends
 from shop_app.user_authentication import get_db
 from shop_app.user_authentication import templates, check_admin

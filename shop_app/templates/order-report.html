@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Order</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f8f9fa;
+            color: #343a40;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 25px;
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            font-size: 2rem;
+            margin-bottom: 25px;
+            text-align: center;
+        }
+
+        .filter-section {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .filter-section label {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .filter-section input[type="text"],
+        .filter-section input[type="date"] {
+            padding: 10px;
+            font-size: 1rem;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            width: 360px;
+            box-sizing: border-box;
+        }
+
+        button {
+            background-color: #004080;
+            color: #ffffff;
+            border: none;
+            padding: 12px 25px;
+            font-size: 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+            display: inline-block;
+            text-decoration: none;
+            transition: background-color 0.3s ease;
+            margin-bottom: 15px;
+        }
+
+        button:hover {
+            background-color: #87CEFA;
+        }
+
+        .table-container {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            min-width: 800px;
+        }
+
+        th, td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #dee2e6;
+            font-size: 1rem;
+            white-space: nowrap;
+        }
+
+        th {
+            background-color: #f1f1f1;
+            color: #343a40;
+            font-weight: bold;
+        }
+
+        td a {
+            color: #007bff;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        td a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 768px) {
+            table {
+                font-size: 0.9rem;
+            }
+
+            th, td {
+                padding: 10px;
+            }
+
+            button {
+                width: 100%;
+                text-align: center;
+                padding: 10px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Customer Order</h1>
+        <button onclick="window.location.href='/welcome/'">Back</button>
+        <!-- Filter Section with Customer Name and Date -->
+        <div class="filter-section">
+            <div>
+                <label for="customer_name">Customer Name:</label>
+                <input type="text" id="customer_name" name="customer_name">
+            </div>
+            <div>
+                <label for="order_date">Sales Date:</label>
+                <input type="date" id="order_date" name="order_date">
+            </div>
+        </div>
+
+        <div class="table-container">
+            <table id="salesTable">
+                <thead>
+                    <tr>
+                        <th>Date of Order</th>
+                        <th>Attendant</th>
+                        <th>Customer Name</th>
+                        <th>Customer Email</th>
+                        <th>Payment Method</th>
+                        <th>Order Amount</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for order in db_orders %}
+                    <tr>
+                        <td data-label="Date of Order"><a href="/order/order-items/{{order.id}}">{{ order.created_at }}</a></td>
+                        <td data-label="Attendant">{{ order.user.fullname }}</td>
+                        <td data-label="Customer Name">{{ order.customer_name }}</td>
+                        <td data-label="Customer Email">{{ order.customer_email }}</td>
+                        <td data-label="Payment Method">{{ order.payment_method }}</td>
+                        <td data-label="Order Amount">{{ order.total_amount }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        const customerNameInput = document.getElementById("customer_name");
+        customerNameInput.addEventListener('input', filterByCustomerName);
+        const orderDateInput = document.getElementById("order_date");
+        orderDateInput.addEventListener('input', filterByOrderDate);
+
+        function filterByOrderDate() {
+            const orderDate = orderDateInput.value;
+            const table = document.getElementById("salesTable");
+            const rows = table.getElementsByTagName("tr");
+
+            if (!orderDate) {
+                for (let i = 1; i < rows.length; i++) {
+                    rows[i].style.display = "";
+                }
+                return;
+            }
+
+            for (let i = 1; i < rows.length; i++) { // Start from 1 to skip header row
+                const orderDateCell = rows[i].getElementsByTagName("td")[0]; // Index 0 for 'date of order' column
+                const orderDateText = (orderDateCell.textContent || orderDateCell.innerText);
+                const rowDate = orderDateText.split(" ")[0]
+
+                if (orderDate === rowDate) {
+                    rows[i].style.display = ""; // Show rows with order date match
+                } else {
+                    rows[i].style.display = "none"; // Hide rows without order date match
+                }
+            }
+        }
+
+        function filterByCustomerName() {
+            const customerName = customerNameInput.value.trim().toLowerCase();
+            const table = document.getElementById("salesTable");
+            const rows = table.getElementsByTagName("tr");
+
+            if (!customerName) {
+                for (let i = 1; i < rows.length; i++) {
+                    rows[i].style.display = "";
+                }
+                return;
+            }
+
+            for (let i = 1; i < rows.length; i++) { // Start from 1 to skip header row
+                const customerNameCell = rows[i].getElementsByTagName("td")[2]; // Index 2 for 'Customer Name' column
+                const customerText = customerNameCell.textContent || customerNameCell.innerText;
+
+                if (customerText.toLowerCase().includes(customerName)) {
+                    rows[i].style.display = ""; // Show rows with customer name match
+                } else {
+                    rows[i].style.display = "none"; // Hide rows without customer name match
+                }
+            }
+        }
+    </script>
+</body>
+
+</html>
