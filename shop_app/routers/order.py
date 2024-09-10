@@ -15,14 +15,24 @@ async def order_report(
         db: Session = Depends(get_db)
 ):
     db_orders = crud_sales.get_all_oder(db)
+    filtered_orders = []
     for order in db_orders:
-        order.created_at = order.created_at.replace(microsecond=0)
+        if order.orderitems:
+            filtered_orders.append({
+                "created_at": order.created_at.replace(microsecond=0),
+                "fullname": order.user.fullname,
+                "customer_name": order.customer_name,
+                "customer_email": order.customer_email,
+                "payment_method": order.payment_method,
+                "total_amount": order.total_amount,
+                "id": order.id
+            })
     return templates.TemplateResponse(
-        "order-report.html", {"request": request, "db_orders": db_orders})
+        "order-report.html", {"request": request, "db_orders": filtered_orders})
 
 
 @router.get("/order/order-items/{order_id}", response_class=HTMLResponse)
-async def expense_update_page(
+async def customer_order(
         order_id: int,
         request: Request,
         db: Session = Depends(get_db)

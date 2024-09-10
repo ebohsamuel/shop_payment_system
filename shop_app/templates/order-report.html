@@ -154,7 +154,7 @@
                     {% for order in db_orders %}
                     <tr>
                         <td data-label="Date of Order"><a href="/order/order-items/{{order.id}}">{{ order.created_at }}</a></td>
-                        <td data-label="Attendant">{{ order.user.fullname }}</td>
+                        <td data-label="Attendant">{{ order.fullname }}</td>
                         <td data-label="Customer Name">{{ order.customer_name }}</td>
                         <td data-label="Customer Email">{{ order.customer_email }}</td>
                         <td data-label="Payment Method">{{ order.payment_method }}</td>

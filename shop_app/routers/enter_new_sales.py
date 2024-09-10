@@ -102,9 +102,8 @@ async def cash_back_transfer(
     if db_order_item:
         db.refresh(db_order_item)
 
-    products_category = crud_product_category.get_all_product_category(db)
-    rendered_products_category = sales_dashboard(products_category)
     return templates.TemplateResponse(
-        "product_category_directory_for_sales.html", {"request": request, "products": rendered_products_category})
-
+        "customer-order.html",
+        {"request": request, "order_items": db_order.orderitems, "order": db_order}
+    )
 

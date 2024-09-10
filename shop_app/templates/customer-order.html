@@ -103,8 +103,8 @@
 <body>
     <div class="container">
         <h1>{{order.customer_name}} Order</h1>
-        <button onclick="window.location.href='/order/report'">Back</button>
-         <button onclick="window.location.href=''">Print</button>
+        <button onclick="window.location.href='/order/report'">Order Report</button>
+         <button onclick="window.location.href='/print/{{order.id}}'">Print</button>
          <button onclick="window.location.href='/sales/sales-platform'">Enter New Sales</button>
 
         <div class="table-container">

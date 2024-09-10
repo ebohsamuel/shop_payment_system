@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sales Receipt</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        .receipt-container {
+            width: 80%;
+            margin: 50px auto;
+            background-color: white;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        .customer-info {
+            margin-bottom: 20px;
+            font-size: 16px;
+        }
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+        .info-row div {
+            width: 30%;
+            white-space: nowrap;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+            border: 1px solid #ccc;
+        }
+        th {
+            background-color: #f8f8f8;
+            font-weight: bold;
+        }
+        tfoot td {
+            font-weight: bold;
+            text-align: right;
+            border-top: 2px solid #000;
+        }
+        .total-amount {
+            text-align: right;
+            font-size: 18px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="receipt-container">
+    <h1>Sales Receipt</h1>
+
+    <!-- Customer and Date Information -->
+    <div class="customer-info">
+        <div class="info-row">
+            <div><strong>Sales Date:</strong> <span id="sales_date">{{ order.created_at }}</span></div>
+            <div><strong>Print Date:</strong> <span id="print_date"></span></div>
+            <div><strong>Customer Name:</strong> {{ order.customer_name }}</div>
+        </div>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Product Name</th>
+                <th>Quantity</th>
+                <th>Price</th>
+                <th>Amount</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for order_item in order_items %}
+            <tr>
+                <td>{{ order_item.product.product_name }}</td>
+                <td>{{ order_item.quantity }}</td>
+                <td>{{ order_item.sales_price }}</td>
+                <td>{{ order_item.quantity * order_item.sales_price }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+        <tfoot>
+            <tr>
+                <td colspan="3">Total Amount</td>
+                <td>{{ total_amount }}</td>
+            </tr>
+        </tfoot>
+    </table>
+</div>
+<script>
+    const date = new Date();
+    printDate = document.getElementById('print_date');
+    printDate.textContent = date.toLocaleDateString() + ' ' + date.toLocaleTimeString();
+</script>
+</body>
+</html>
