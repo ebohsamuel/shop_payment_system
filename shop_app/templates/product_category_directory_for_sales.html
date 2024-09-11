@@ -18,7 +18,9 @@
             font-size: 2rem;
             margin-bottom: 20px;
         }
-
+        .back-button-container {
+            text-align: center;
+        }
         .back-button {
             display: inline-block;
             padding: 10px 20px;
@@ -31,8 +33,8 @@
             text-align: center;
             text-decoration: none;
             margin-bottom: 20px;
+            margin: 20px;
         }
-
         .back-button:hover {
             background-color: #0056b3;
         }
@@ -74,17 +76,6 @@
             margin: 10px 0;
             font-weight: 600;
         }
-
-        .product-name a {
-            color: inherit;
-            text-decoration: none;
-            transition: color 0.2s;
-        }
-
-        .product-name a:hover {
-            color: #007bff;
-        }
-
         .product-details {
             margin: 10px 0;
             font-size: 0.9rem;
@@ -154,8 +145,9 @@
 
 <h1>Enter Sales Here</h1>
 
-<a href="/welcome/" class="back-button">Back</a>
-
+<div class="back-button-container">
+    <a href="/welcome/" class="back-button">Back</a>
+</div>
 <div class="scroll-container">
     <form action="/sales/checkout" method="GET">
         <div class="directory-container">
